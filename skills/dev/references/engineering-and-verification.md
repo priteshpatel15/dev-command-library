@@ -56,7 +56,7 @@ Apply this hierarchy intentionally: **Clean Architecture → decoupled component
 
 ## Ponytail integration
 
-- Use the installed `ponytail:ponytail` skill through [SKILL.md activation rules](../SKILL.md#load-dependencies).
+- Use the exact Ponytail skills selected by [command routing](../SKILL.md#command-routing) through the shared [loading rules](../SKILL.md#load-dependencies).
 - Apply this file's architecture and acceptance requirements alongside the skill; honor explicit user overrides.
 - Load actual installed companion skills only when needed, using the same discovery and context-reuse rules.
 

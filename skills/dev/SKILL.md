@@ -2,7 +2,7 @@
 name: dev
 description: Coordinate reusable product design, outcome roadmaps, and one OpenSpec change at a time with Ponytail and evidence-based QA. Use for $dev setup, design, plan, work, verify, revise, finish, or status, including adoption of an existing development effort.
 metadata:
-  version: "1.0.3"
+  version: "1.0.4"
 ---
 
 # Development command library
@@ -43,28 +43,35 @@ metadata:
 
 - Load only the references and installed skills needed for the selected operation.
 - Resolve required dependencies before changing files; report missing dependencies and stop dependent work.
-- For design, plan, revise, work, and verify, read the actual installed `ponytail:ponytail` skill from the session catalog unless explicitly disabled.
+- Resolve exact skill names from the session catalog; read and apply their actual installed `SKILL.md` files according to the routing table below.
 - Default Ponytail to full; honor explicit overrides, including disabling it.
 - Load a skill once per agent context; reuse its instructions while available and unchanged.
 - If instructions are unavailable or the installed version/content changes, reload the actual skill.
 - Never substitute a remembered summary or hardcode a versioned cache path.
-- Setup, status, and finish need not load Ponytail for dependency diagnosis or evidence inspection; engineering and completion rules still apply.
+- A command requiring no additional Ponytail skill does not deactivate an already-active mode.
 - Use native OpenSpec context/status/instructions for roots, stores, schemas, artifact graphs, and output paths; do not recreate its parser, schema, or templates.
 - Set `OPENSPEC_TELEMETRY=0` on read-only discovery/status subprocesses to prevent first-run configuration writes.
 - Missing OpenSpec still permits product design and diagnostic status.
 
 ## Command routing
 
-| Command | Additional instructions | Result |
-| --- | --- | --- |
-| `setup` | [OpenSpec setup](references/openspec-workflow.md#setup); [maintenance](references/maintenance.md) for dependency/install issues | Project integration |
-| `design` | [Product planning](references/product-planning.md) | Design and roadmap |
-| `plan` | [OpenSpec integration](references/openspec-workflow.md); installed `openspec-propose` | Reviewable change |
-| `work` | [Engineering](references/engineering-and-verification.md); installed `openspec-apply-change` | Implementation, QA, review, evidence |
-| `verify` | [Engineering](references/engineering-and-verification.md) | Current acceptance report |
-| `revise` | [Product planning](references/product-planning.md) for `--effort`; otherwise [OpenSpec integration](references/openspec-workflow.md) and installed `openspec-update-change` | Revised planning and invalidation notes |
-| `finish` | [OpenSpec integration](references/openspec-workflow.md); installed `openspec-sync-specs` and `openspec-archive-change` as applicable | Verified sync and archive |
-| `status` | [Status](references/commands.md#status) | Observed state and next command |
+- This table owns skill selection. Skill names are instructions to load and apply, not shell commands.
+- Listed skills are required unless marked conditional or explicitly overridden by the user. Load conditional skills only when their condition applies.
+
+| Command | Ponytail skills | OpenSpec skills / CLI | Reference |
+| --- | --- | --- | --- |
+| `setup` | No additional skill | Native CLI setup/discovery; no setup skill | [Setup](references/openspec-workflow.md#setup); [maintenance](references/maintenance.md) for dependency/install issues |
+| `design` | `ponytail:ponytail` | Optional `openspec-explore` for unresolved exploration in an OpenSpec project | [Product planning](references/product-planning.md) |
+| `plan` | `ponytail:ponytail` | `openspec-propose` | [Plan](references/openspec-workflow.md#plan) |
+| `work` | `ponytail:ponytail`; `ponytail:ponytail-review` for code-change acceptance | `openspec-apply-change` | [Work](references/openspec-workflow.md#work); [engineering](references/engineering-and-verification.md) |
+| `verify` | `ponytail:ponytail`; `ponytail:ponytail-review` when required code-review evidence is missing or stale | Read-only native CLI context/status/validation; no verification skill | [Engineering](references/engineering-and-verification.md) |
+| `revise` | `ponytail:ponytail` | `openspec-update-change` for the selected change | [Revise](references/openspec-workflow.md#revise) |
+| `revise --effort` | `ponytail:ponytail` | No required skill; do not revise dependent changes implicitly | [Product planning](references/product-planning.md) |
+| `finish` | No additional skill; require current applicable review evidence or return to `verify` | `openspec-archive-change`, which invokes `openspec-sync-specs` synchronously when sync is needed | [Finish](references/openspec-workflow.md#finish) |
+| `status` | No additional skill | Read-only native CLI discovery/status; no status skill | [Status](references/commands.md#status) |
+
+- For optional exploration, follow [OpenSpec skill boundaries](references/openspec-workflow.md#skill-boundaries); return to the selected command for its outputs.
+- Use [engineering](references/engineering-and-verification.md#ponytail-integration) for review freshness and conditional Ponytail audit/debt/help/gain usage.
 
 ## Handoff
 
