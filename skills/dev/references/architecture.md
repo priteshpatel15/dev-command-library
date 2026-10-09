@@ -1,191 +1,176 @@
 # Architecture and artifact guide
 
-This guide explains the library's structure. The [command reference](commands.md) defines observable command behavior; [engineering and verification](engineering-and-verification.md) defines required engineering and acceptance rules.
+## Purpose
 
-## Responsibilities
+- Explain component responsibilities, file locations, artifact ownership, and the development lifecycle.
+- Use this guide when learning or maintaining the library.
+- Read [commands](commands.md) for operation contracts and [engineering](engineering-and-verification.md) for acceptance rules.
 
-`dev` is an instruction package executed by Codex. It has no daemon, command parser, scheduler, task database, custom OpenSpec schema, or application runtime.
+## Components and responsibilities
 
-| Component | Owns | Depends on |
-|---|---|---|
-| `dev` entrypoint | Operation routing, target resolution, instruction loading, handoff boundaries | Applicable project instructions and selected command reference |
-| Product-planning guidance | Product experience, constraints, outcome roadmap, adoption | User goals, existing product evidence, Ponytail |
-| Installed OpenSpec workflows | Change scaffolding and native proposal/spec/design/task lifecycle | OpenSpec CLI, configured schema and planning store |
-| Installed Ponytail skill | Smallest complete solution across design, plan, revise, work, and review | Actual scope, reusable components, accepted engineering requirements |
-| Project tooling | Builds, checks, tests, database acceptance, browser QA | The project's real architecture and execution environment |
-| Verification record | Acceptance coverage, tested identity, findings, unresolved gaps | Actual tool results and engineering review |
+| Component | Responsibility |
+| --- | --- |
+| User | Select goals, outcomes, changes, and subsequent commands; resolve material decisions. |
+| Codex | Execute the selected instructions, inspect artifacts, use project tools, and report observed results. |
+| `$dev` package | Resolve the project/target, route commands, load relevant instructions, and preserve operation boundaries. |
+| Product-planning reference | Guide product design, outcome roadmaps, adoption, and effort revision. |
+| Installed OpenSpec skills and CLI | Own native schemas, metadata, artifact instructions, change lifecycle, and planning-store resolution. |
+| Installed Ponytail skills | Supply actual development/review instructions according to command routing. |
+| Project tooling | Build, test, run required UI/copied-database QA, and produce evidence. |
+| Verification record | Retain tested identities, coverage, results, findings, and acceptance gaps for later assessment. |
 
-Product-planning guidance uses the useful design and roadmap concepts of `specify-product`. It does not invoke that skill's compiler, hash-approval runtime, or `develop-product` handoff. The original skills remain unchanged.
+- `$dev` is a Codex instruction package; it has no application runtime, daemon, scheduler, or task database.
+- Each invocation resolves the current repository and explicit/unambiguous target; there is no global active-project pointer.
+- State comes from current artifacts and evidence; recency and checkboxes alone do not establish completion.
 
-```mermaid
-flowchart TD
-    User["You: $dev command"] --> Entry["SKILL.md: resolve project and command"]
-    Entry --> Rules["Project instructions and relevant references"]
-    Rules --> Pony["Installed Ponytail: design / plan / revise / work / verify"]
-    Pony --> Design["Product design + outcome roadmap"]
-    Design --> DR["Your design review"]
-    DR --> Plan["OpenSpec proposal + specs + applicable design + tasks"]
-    Pony --> Plan
-    Plan --> PR["Your change review"]
-    PR --> Work["Tests, implementation, required QA"]
-    Work --> Review["Verification evidence + engineering review"]
-    Review -->|Defects| Work
-    Review -->|Current acceptance| Finish["Sync specs, archive, update roadmap links"]
-    Finish --> Next["Report next command; wait for instruction"]
-    Rules --> Status["Read-only status"]
-    Rules --> Setup["Project setup"]
-```
+## Global installation and files
 
-`work` owns the full implementation and qualification cycle. `verify` provides a separate evidence review without changing product code or requirements. `finish` consumes current proof; native OpenSpec task completion is an input, not proof by itself.
-
-## Global package files
+Current installation:
 
 ```text
+Source: /Users/po/codeandconfigs/dev-command-library
+Link:   /Users/po/.agents/skills/dev
+        -> /Users/po/codeandconfigs/dev-command-library/skills/dev
+
 dev-command-library/
 ├── README.md
 ├── .gitignore
-├── docs/
-│   └── implementation-plan.md
-├── skills/
-│   └── dev/
-│       ├── SKILL.md
-│       ├── agents/openai.yaml
-│       ├── references/
-│       │   ├── architecture.md
-│       │   ├── commands.md
-│       │   ├── product-planning.md
-│       │   ├── openspec-workflow.md
-│       │   ├── engineering-and-verification.md
-│       │   └── maintenance.md
-│       └── assets/templates/
-│           ├── design.md
-│           ├── roadmap.md
-│           └── verification.md
+├── docs/implementation-plan.md
+├── skills/dev/
+│   ├── SKILL.md
+│   ├── agents/openai.yaml
+│   ├── references/
+│   │   ├── architecture.md
+│   │   ├── commands.md
+│   │   ├── product-planning.md
+│   │   ├── openspec-workflow.md
+│   │   ├── engineering-and-verification.md
+│   │   └── maintenance.md
+│   └── assets/templates/
+│       ├── design.md
+│       ├── roadmap.md
+│       └── verification.md
 └── tests/
     ├── scenarios.md
     └── evidence/<run-id>.md
 ```
 
-| File | Contents | Used when |
-|---|---|---|
-| `README.md` | Human quickstart and navigation | Starting or returning to the library |
-| `.gitignore` | Temporary evaluation/caches exclusions | Maintaining source history |
-| `docs/implementation-plan.md` | Approved original design, build scope, and acceptance | Understanding initial decisions or auditing the build |
-| `SKILL.md` | Skill identity, essential requirements, command routing, target selection | Every invocation |
-| `agents/openai.yaml` | Skill-picker display metadata and invocation prompt | Codex discovers or displays the skill |
-| `references/architecture.md` | This structural and artifact guide | Understanding or modifying the library |
-| `references/commands.md` | Canonical command contract and examples | Running a command or consulting its manual |
-| `references/product-planning.md` | Design, roadmap, and adoption procedure | `design` and effort-level `revise` |
-| `references/openspec-workflow.md` | Delegation to native OpenSpec capabilities | OpenSpec setup, planning, revision, implementation, and finish |
-| `references/engineering-and-verification.md` | Engineering obligations and acceptance criteria | Design/plan decisions, implementation, review, completion |
-| `references/maintenance.md` | Installation, updates, evaluations, recovery | Maintaining or repairing the library |
-| `assets/templates/design.md` | Product design starting structure | Creating a design without an existing canonical equivalent |
-| `assets/templates/roadmap.md` | Outcome, dependency, and change-link structure | Creating an outcome roadmap |
-| `assets/templates/verification.md` | Tested identity, coverage, results, findings | Creating a change verification record |
-| `tests/scenarios.md` | Realistic prompts, fixtures, observable pass conditions | Evaluating behavior before release or relevant changes |
-| `tests/evidence/<run-id>.md` | Actual observed evaluation results | Reviewing release confidence or regressions |
+Package paths below are relative to `skills/dev/`.
 
-The installed package is self-contained under `skills/dev`. References needed during commands are inside that package. The source README, implementation record, and library evaluation fixtures are human/maintenance resources outside it.
+| File | Purpose and use |
+| --- | --- |
+| [SKILL.md](../SKILL.md) | Entrypoint: target selection, shared rules, dependency loading, and authoritative skill routing; every invocation. |
+| `agents/openai.yaml` | Discovery/display metadata and default prompt; currently starts with `$dev status`. |
+| [references/architecture.md](architecture.md) | Structure, locations, ownership, and lifecycle; orientation and maintenance. |
+| [references/commands.md](commands.md) | Inputs, actions, writes, and stop conditions; selected operation. |
+| [references/product-planning.md](product-planning.md) | Product design, roadmap, adoption, and revision; `design` and `revise --effort`. |
+| [references/openspec-workflow.md](openspec-workflow.md) | Native workflow integration; setup, planning, work, revision, verification/status, and finish. |
+| [references/engineering-and-verification.md](engineering-and-verification.md) | Architecture, implementation, QA, review, and evidence requirements; design through completion. |
+| [references/maintenance.md](maintenance.md) | Installation, updates, validation, recovery, and removal; library maintenance. |
+| [assets/templates/design.md](../assets/templates/design.md) | Starting structure when no suitable canonical product design exists. |
+| [assets/templates/roadmap.md](../assets/templates/roadmap.md) | Outcome IDs, dependencies, acceptance boundaries, and change links when creating a roadmap. |
+| [assets/templates/verification.md](../assets/templates/verification.md) | Tested identities, coverage, results, findings, and gaps when creating change evidence. |
 
-The entrypoint loads the selected command section and relevant reference files progressively. OpenSpec artifact templates and Ponytail rules come from their actual installed providers rather than duplicated snapshots.
+- Repository-level `README.md` provides navigation; `.gitignore` excludes temporary evaluation/cache output.
+- `docs/implementation-plan.md` retains the original build design and acceptance scope.
+- `tests/scenarios.md` defines library behavior evaluations; `tests/evidence/` retains observed results and limitations.
+- The global package holds reusable instructions; project/store artifacts remain outside it.
+- Load only the selected command's references and actual installed skills, following [loading rules](../SKILL.md#load-dependencies).
+- OpenSpec templates and Ponytail instructions come from their installed providers; this package does not vendor copies of them.
 
-## Project artifacts
+## Project artifacts and ownership
 
-Default paths are shown below. Existing canonical equivalents take precedence; OpenSpec's CLI-resolved paths and schema are authoritative, including when a separate planning store is configured.
+- `<project>` is the code repository; `<planning-home>` is the OpenSpec CLI-resolved planning root, which may be a separate store.
+- `<change>` is the CLI-returned `changeRoot`.
+- Paths below show default conventions. Existing canonical product documents and native schema/output paths take precedence.
+- Writers are `$dev` operations unless stated otherwise; `revise` means change-level revision, while `revise --effort` means product-level revision.
 
-```text
-<project>/
-├── AGENTS.md
-├── .agents/skills/openspec-*/SKILL.md       # generated by OpenSpec
-├── docs/development/<effort-id>/
-│   ├── design.md
-│   └── roadmap.md
-├── openspec/
-│   ├── config.yaml
-│   ├── specs/<capability>/spec.md
-│   └── changes/
-│       ├── <change-name>/
-│       │   ├── .openspec.yaml
-│       │   ├── proposal.md
-│       │   ├── specs/<capability>/spec.md
-│       │   ├── design.md                  # when applicable
-│       │   ├── tasks.md
-│       │   └── verification.md
-│       └── archive/<date>-<change-name>/
-├── <existing source and test directories>/
-└── <existing QA output directories>/
-```
+| Artifact | Purpose | Location | Writers | Readers |
+| --- | --- | --- | --- | --- |
+| Project instructions | Architecture, commands, telemetry, QA, and workflow requirements | `<project>/AGENTS.md` and nested instructions | `setup` preserves and extends root rules | All operations |
+| OpenSpec integration | Schema/context/store configuration and generated workflows | CLI-resolved `openspec/config.yaml`, `.agents/skills/openspec-*/`, and metadata | Native CLI and bounded `setup` configuration updates | OpenSpec workflows |
+| Product design | Intended experience, behavior, constraints, and acceptance | `<project>/docs/development/<effort-id>/design.md` | `design`, `revise --effort` | `plan`, `work`, acceptance review |
+| Roadmap | Delivery outcomes, dependencies, acceptance boundaries, and change links | `<project>/docs/development/<effort-id>/roadmap.md` | `design`, `revise --effort`; owned link updates from `plan`/`finish` | Selection, planning, delivery review |
+| Change metadata | Native change identity and schema | `<change>/.openspec.yaml` | OpenSpec CLI | Native workflows |
+| Proposal | Reason, bounded scope, impact, and upstream outcome/request | `<change>/proposal.md` | `plan`, `revise` | `work`, `verify`, `finish` |
+| Delta specifications | Required behavior and scenarios for the change | `<change>/specs/<capability>/spec.md` | `plan`, `revise` | Implementation, acceptance, synchronization |
+| Technical design | Selected solution, contracts, reuse, dependencies, and migrations | `<change>/design.md`, when applicable | `plan`, `revise` | Implementation and review |
+| Tasks | Work and verification obligations with implementation progress | `<change>/tasks.md` | `plan`, `revise`; progress from `work` | Work/resume and completion assessment |
+| Verification record | Actual coverage, tested identity, findings, and gaps | `<change>/verification.md` | `work`, `verify`; invalidation from `revise` | `status`, `finish` |
+| Main specifications | Accumulated capability behavior | `<planning-home>/openspec/specs/<capability>/spec.md` | Synchronization during `finish` | Later planning and development |
+| Code, tests, config, migrations | Implemented solution | Existing locations in `<project>` | `work` | Runtime, tests, review |
+| QA output | Logs, reports, screenshots, and traces | Existing harness-owned locations | Project tooling during `work`/`verify` | Debugging and verification |
+| Archived change | Complete closed change with metadata and evidence | Native resolved archive directory | `finish` | History, status, later planning |
 
-OpenSpec may also generate integration metadata such as `.openspec-target`; its installed CLI owns those files. `$dev` does not manufacture or maintain substitutes.
+- Product design defines the experience and outcomes; technical design defines the selected change's solution.
+- Roadmap owns delivery intent, native tasks own implementation progress, and verification owns acceptance evidence.
+- One outcome may span several changes; completing one change qualifies only its accepted scope.
+- `verification.md` is a library convention; OpenSpec does not automatically validate its claims.
+- Evidence references declare repository/path bases and remain resolvable after archive.
+- Native OpenSpec owns all generated metadata, including files such as `.openspec-target` when present.
 
-| Artifact | Owner and content | Writers | Readers |
-|---|---|---|---|
-| `AGENTS.md` | Project rules, architectural boundaries, test commands, database protections, Ponytail requirement | `setup` preserves and extends existing rules | All project work |
-| OpenSpec configuration/integration | Native schema, context, store, and generated skills | OpenSpec initialization; bounded `setup` configuration merge | OpenSpec workflows |
-| Product design | Purpose, users, journeys, supported/recovery behavior, acceptance, durable architecture constraints | `design`; effort-level `revise` | `plan`, `work`, acceptance review |
-| Roadmap | Outcomes, dependencies, acceptance boundaries, change links | `design`, `plan`, effort-level `revise`, `finish` | Delivery selection and review |
-| Change metadata | Native change identity/schema configuration | OpenSpec CLI | OpenSpec workflows |
-| Proposal | Reason, bounded scope, impact, upstream outcome or direct request | `plan`; change-level `revise` | `work`, `verify`, `finish` |
-| Delta specifications | Required behavior and scenarios | `plan`; `revise` | Implementation, tests, verification, spec sync |
-| Technical design | Necessary technical choices, reuse, dependency direction, contracts, migrations | `plan`; `revise` when schema requires | Implementation and engineering review |
-| Tasks | Bounded work and verification criteria | `plan`, `revise`, progress during `work` | Work/resume and completion assessment |
-| Verification record | Actual current evidence, engineering findings, gaps | `work`, `verify`; invalidation during `revise` | `status`, `finish` |
-| Main specifications | Accumulated capability behavior | Successful sync in `finish` | Later change planning |
-| Code/tests/config/migrations | Actual solution using existing project structure | `work` | Runtime, test and review tools |
-| Raw QA output | Reports, traces, screenshots, logs | Project test tooling | Debugging and evidence inspection |
+## Lifecycle and control
 
-Product design answers **what experience and outcomes should exist**. Change design answers **how this particular change will implement them**. The roadmap links outcomes to changes; it does not duplicate task checkboxes or create an independent completion counter.
-
-`verification.md` is a library convention. It travels with the archived change, but OpenSpec does not validate its assertions automatically. Evidence references identify their repository/path base so moving a planning directory does not silently point at the wrong report.
-
-## Commands and data flow
-
-| Command | Reads | Writes | Ends at |
-|---|---|---|---|
-| `setup` | Project instructions, tools, structure, existing configuration | Bounded project instructions and native OpenSpec setup/config | Prepared project or named missing dependency |
-| `design` | Goal/source, existing behavior, project rules | Canonical product design and roadmap, or adoption references | Product review |
-| `plan` | Outcome/direct request, existing code/contracts/tests, main specs | Native artifacts for one change; applicable roadmap association | Change review |
-| `work` | Selected artifacts, current code and evidence | Code/tests/config, task progress, evidence | Accepted change or concrete blocker |
-| `verify` | Current artifacts/code/evidence | Verification report and test output | Qualification result |
-| `revise` | Feedback and affected planning artifacts | Revised plan, affected task/evidence invalidation | Planning review |
-| `finish` | Current qualification evidence and spec deltas | Main specs, archived change, owned roadmap references | One completed change |
-| `status` / bare `dev` | Current artifacts and evidence | Nothing | State and next command |
+- The diagram shows a typical manually selected sequence; each user request authorizes its operation only.
+- `setup` prepares integration when needed; `status` inspects without writes at any stage.
+- A bounded standalone fix can start at `plan`; an existing effort reuses suitable design and roadmap artifacts.
+- `work` includes required QA, review, and corrective iteration. Separate `verify` is optional when acceptance evidence is already current.
+- `verify` refreshes evidence without editing implementation/tests/accepted behavior; authorized isolated QA data mutations follow the command contract.
+- `finish` proceeds only with current passing acceptance and resolved required findings. Required spec sync must complete and be verified before archive.
 
 ```mermaid
 sequenceDiagram
     actor User
-    participant Dev as dev skill
-    participant Pony as Installed Ponytail
+    participant Dev as Codex with dev
     participant Spec as OpenSpec
     participant Tools as Project tools
-    participant Files as Project artifacts
+    participant Files as Project or store artifacts
     User->>Dev: design goal
-    Dev->>Pony: Load actual rules
-    Dev->>Files: Design and roadmap
-    Dev-->>User: Reviewable design
-    User->>Dev: plan outcome
-    Dev->>Spec: Resolve schema/store; scaffold and plan
-    Spec->>Files: Proposal, specs, applicable design, tasks
+    Dev->>Files: Product design and roadmap
+    Dev-->>User: Reviewable product artifacts
+    User->>Dev: plan selected outcome
+    Dev->>Spec: Resolve context and create native change metadata
+    Spec-->>Dev: Artifact paths and instructions
+    Dev->>Files: Planning artifacts
     Dev-->>User: Reviewable change
-    User->>Dev: work change
-    Dev->>Files: Read plan; update tests and code
-    Dev->>Tools: Checks and applicable copied-DB/UI QA
-    Tools-->>Dev: Actual results
-    Dev->>Files: Verification and task progress
-    Dev-->>User: Accepted work or concrete blocker
-    User->>Dev: finish change
-    Dev->>Files: Check current acceptance and review
-    Dev->>Spec: Sync and archive
-    Dev->>Files: Update owned roadmap links
-    Dev-->>User: Completed change; next command
+    User->>Dev: work selected change
+    Dev->>Files: Implement and test accepted scope
+    Dev->>Tools: Required checks and applicable UI / copied-DB QA
+    Dev->>Files: Task progress, review findings, verification evidence
+    Dev-->>User: Current acceptance or concrete blocker
+    opt User requests separate verification
+        User->>Dev: verify selected change
+        Dev->>Tools: Missing or invalidated applicable checks
+        Dev->>Files: Updated verification evidence
+        Dev-->>User: Acceptance result and gaps
+    end
+    User->>Dev: finish selected change
+    Dev->>Files: Assess current acceptance and review evidence
+    alt Acceptance and required review pass
+        Dev->>Spec: Sync when needed and verify synchronization
+        alt Synchronization complete or unnecessary
+            Dev->>Spec: Archive complete change directory
+            Dev->>Files: Update owned roadmap links
+            Dev-->>User: One closed change and next command
+        else Synchronization blocked or failed
+            Dev-->>User: Leave change active and report blocker
+        end
+    else Acceptance missing, stale, or failed
+        Dev-->>User: Report required work or verification
+    end
 ```
 
-No global active-project pointer exists. Every invocation resolves the current repository and explicit/unambiguous target. State is derived from artifacts and current evidence, not from the last chat message, newest directory, or checked boxes alone.
+- Every operation loads the actual skills/references selected by [command routing](../SKILL.md#command-routing), including Ponytail where required.
+- Material scope/behavior changes route to a selected `revise`; effort revision reports affected changes without editing them implicitly.
+- Native task completion, `all_done`, or archival alone does not establish verified delivery.
+- Finish reports the next command; it does not launch another outcome or an execution loop.
 
-## Principles and their practical effect
+## Governing principles
 
-Clean Architecture provides boundaries and dependency direction. Decoupling and SOLID provide focused responsibilities and contracts. Ponytail avoids unnecessary components and abstractions within those requirements. This applies to plans as well as code: a complex accepted plan cannot reliably be simplified only at implementation time.
-
-These are instruction-based obligations backed by project checks and recorded review. Meaningful architecture/import rules, typing, tests, and CI can enforce mechanical properties. Human or independent agent review addresses semantic questions such as whether an abstraction is necessary. The [engineering reference](engineering-and-verification.md) defines the actual gates and freshness requirements.
-
-The first version remains manually driven. Native artifacts make future automation possible, but this package contains no loop or implied permission to start another outcome.
+- Apply the [engineering hierarchy](engineering-and-verification.md#architecture-decoupling-and-solid): Clean Architecture for modules/dependencies, decoupled components within modules, and SOLID responsibilities/contracts within components.
+- Load and apply actual Ponytail through routing; keep its rules in the installed skills.
+- Use applicable project and nested instructions for concrete boundaries, commands, and QA requirements.
+- The references provide instruction-based obligations. Project checks, tests, CI, and recorded review supply supporting evidence.
+- Mechanical checks assess enforceable properties; human or independent agent review assesses architectural meaning and unresolved findings.
+- [Engineering](engineering-and-verification.md) owns acceptance and freshness gates; the architecture guide adds no separate approval process.
+- Product planning does not invoke the `specify-product` compiler/approval runtime or the `develop-product` handoff.
