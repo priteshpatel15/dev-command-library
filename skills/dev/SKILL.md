@@ -2,7 +2,7 @@
 name: dev
 description: Coordinate reusable product design, outcome roadmaps, and one OpenSpec change at a time with Ponytail and evidence-based QA. Use for $dev setup, design, plan, work, verify, revise, finish, or status, including adoption of an existing development effort.
 metadata:
-  version: "1.0.2"
+  version: "1.0.3"
 ---
 
 # Development command library
@@ -33,7 +33,7 @@ metadata:
 - Keep status read-only.
 - Limit verify to evidence updates.
 - Limit finish to one change.
-- Give delegates the same scope, actual Ponytail instructions, governing rules, and relevant artifacts.
+- Give delegates the same scope, governing rules, and artifacts; supply actual Ponytail instructions or require them to load the installed skill.
 - Assign concurrent contributors disjoint file ownership.
 - Require explicit authorization for product commits, publication, deployment, production activation, messages, or starting another outcome.
 - Honor existing authorization; do not request it again for routine work.
@@ -45,7 +45,9 @@ metadata:
 - Resolve required dependencies before changing files; report missing dependencies and stop dependent work.
 - For design, plan, revise, work, and verify, read the actual installed `ponytail:ponytail` skill from the session catalog unless explicitly disabled.
 - Default Ponytail to full; honor explicit overrides, including disabling it.
-- Reuse an unchanged skill already read in the session; never substitute a remembered summary or hardcode a versioned cache path.
+- Load a skill once per agent context; reuse its instructions while available and unchanged.
+- If instructions are unavailable or the installed version/content changes, reload the actual skill.
+- Never substitute a remembered summary or hardcode a versioned cache path.
 - Setup, status, and finish need not load Ponytail for dependency diagnosis or evidence inspection; engineering and completion rules still apply.
 - Use native OpenSpec context/status/instructions for roots, stores, schemas, artifact graphs, and output paths; do not recreate its parser, schema, or templates.
 - Set `OPENSPEC_TELEMETRY=0` on read-only discovery/status subprocesses to prevent first-run configuration writes.

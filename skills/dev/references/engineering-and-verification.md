@@ -1,72 +1,170 @@
 # Engineering and verification contract
 
-These are the user's required engineering obligations. Apply them proportionally to the actual product without weakening accepted scope. Applicable project/nested instructions add concrete conventions. Explicit user changes take precedence; do not silently waive obligations to produce a shorter diff or green report.
+## Purpose and authority
 
-## Ponytail at every decision stage
-
-The shared entry loads the **actual installed Ponytail skill** for design, plan, revise, work and verify, with full default and explicit user overrides respected. Discovery uses available skill metadata; never pin its versioned cache location. Reuse an unchanged instruction already read in the session. Delegates receive the actual skill instructions and the same scope/rules.
-
-| Stage | Apply Ponytail by | Retained decision/evidence |
-| --- | --- | --- |
-| Design | Avoid unnecessary proposed capabilities, options and speculative architecture while meeting complete requested journeys | Product scope, boundaries, justified deferrals and reuse opportunities |
-| Plan | Inspect all affected callers/tests/fixtures/config/exports; reuse existing capabilities; choose the smallest complete solution | Reuse/dependency decisions in native design or concise proposal/tasks |
-| Revise | Reassess complexity and obsolete work without silently dropping accepted behavior | Coherent revisions and affected acceptance/task/evidence notes |
-| Work | Reuse local components, then standard/platform or installed capabilities; fix the root cause once; preserve validation/errors | Actual code, tests, scoped task progress and QA |
-| Verify | Review implementation and call paths for avoidable duplication, abstractions, dependencies and incomplete scope | Concrete findings and resolution in verification |
-| Finish | Require applicable current review evidence | Completion eligibility and preserved archive evidence |
-
-Least code is not a line-count threshold. Simplicity is judged across the complete change, including consumers and tests. No speculative frameworks, extension points, wrappers or interface-per-class rules. A necessary abstraction protects an actual boundary or consumer; its benefit must be concrete.
+- Define required code design, implementation quality, and evidence for completion.
+- Apply rules to the selected scope without weakening accepted behavior.
+- Follow applicable project/nested `AGENTS.md` instructions and accepted product constraints.
+- Keep concrete project boundaries/commands in `AGENTS.md`; reference that authority from OpenSpec configuration.
+- Record change-specific technical decisions in existing planning artifacts.
+- Honor explicit user changes; surface unresolved conflicts instead of silently choosing weaker rules.
 
 ## Architecture, decoupling and SOLID
 
-Map the project before editing. Domain rules remain independent of UI, transport, persistence and vendor SDK details. Application behavior coordinates use cases through meaningful boundaries. Outer adapters implement infrastructure; composition connects them. Reuse the project's real structure instead of manufacturing layers for appearance.
+Apply this hierarchy intentionally: **Clean Architecture → decoupled components within modules → SOLID functions, classes, and contracts.**
 
-Keep business behavior with its owning component, avoid duplicating it in UI/API adapters, and expose narrow interfaces for actual consumers or replaceable dependencies. Review cohesive responsibilities, dependency inversion, compatible substitutions, interface size and unnecessary coupling. Reuse existing boundary tests and CI checks; add a focused invariant test when the changed dependency rule warrants it.
+### Clean Architecture: system organization and dependencies
 
-The project `AGENTS.md` records concrete layers and commands; OpenSpec config points to that authority. Product design adds durable product constraints; native change design records the selected technical solution. Conflicts are surfaced, not silently resolved by the agent.
+- Map affected modules, responsibilities, ownership, and dependencies before changing code.
+- Separate domain rules, application use cases, and infrastructure concerns.
+- Keep domain rules independent of UI, transport, databases, frameworks, and vendor SDKs.
+- Direct source dependencies inward; outer adapters implement application/domain contracts.
+- Connect concrete dependencies at composition boundaries.
+- Place business behavior in its owning module; avoid competing implementations in adapters.
+- Apply these boundaries through the project's existing structure rather than cosmetic layers.
+
+### Decoupling: components within each module
+
+- Give each component a cohesive responsibility.
+- Use narrow, explicit contracts across component boundaries.
+- Pass dependencies explicitly; avoid hidden global dependencies.
+- Isolate external interactions behind appropriate boundaries.
+- Keep implementation details private; avoid reaching into another component's internals.
+- Make component behavior independently testable and reusable where appropriate.
+
+### SOLID: functions, classes, and contracts
+
+| Principle | Required design |
+| --- | --- |
+| Single responsibility | Give each function/component one cohesive purpose. |
+| Open/closed | Support required variations through appropriate extension points. |
+| Liskov substitution | Interchangeable implementations preserve input/output, error, and invariant contracts. |
+| Interface segregation | Require only the operations and data each consumer needs. |
+| Dependency inversion | Business behavior depends on suitable contracts rather than infrastructure details. |
+
+- Apply each principle where relevant; substitution/interface rules concern cooperating components, not every isolated function.
+- Judge abstractions by the boundary they protect; one implementation can still justify a boundary.
+- Reuse architecture/import checks; add a focused invariant check when a changed dependency rule warrants it.
+
+### Apply and verify architectural decisions
+
+| Stage | Required action |
+| --- | --- |
+| Design / plan | State affected responsibilities, boundaries, dependency direction, and reuse decisions in the existing design or proposal. |
+| Work | Implement consistently with those decisions; revise material scope/behavior changes before dependent implementation. |
+| Verify | Inspect actual imports, call paths, responsibilities, and contracts against all three levels; record findings and resolutions. |
+
+## Ponytail integration
+
+- Use the installed `ponytail:ponytail` skill through [SKILL.md activation rules](../SKILL.md#load-dependencies).
+- Apply this file's architecture and acceptance requirements alongside the skill; honor explicit user overrides.
+- Load actual installed companion skills only when needed, using the same discovery and context-reuse rules.
+
+| Installed skill | Use it when |
+| --- | --- |
+| `ponytail:ponytail-review` | Reviewing a completed code change during work or verify; provide the selected diff/files and relevant requirements explicitly. |
+| `ponytail:ponytail-audit` | A broader assessment is requested or needed to understand the selected work; keep the assessment within that scope. |
+| `ponytail:ponytail-debt` | Examining deliberate shortcuts relevant to the work, or when requested; persist a ledger only when requested. |
+| `ponytail:ponytail-gain` / `ponytail:ponytail-help` | Requested information; these are not acceptance gates. |
+
+- Require a current Ponytail review for code-change acceptance unless explicitly overridden by the user.
+- Reuse a prior Ponytail review only when relevant code, requirements, dependencies, and review instructions remain unchanged.
+- Record actual skill sources, available versions, and overrides once per verification record; update them when the instructions used change.
 
 ## Implementation and testing
 
-Identify relevant edge cases and complete meaningful regression or contract coverage for nontrivial behavior changes. Choose implementation/testing order to fit the change; a prior failing test run is not required for acceptance. Test observable behavior and meaningful invariants rather than duplicating implementation. Include applicable errors, validation, permissions, empty states, concurrency/retry/idempotency and boundary cases based on the change.
-
-Record the actual state and checks performed, diagnose observed regressions, and complete missing meaningful coverage. Do not invent historical test results. Documentation-only changes need relevant structural/behavioral validation, not invented application tests. No new generic testing framework is needed when project tools suffice.
-
-Focused tests support iteration; complete required integration acceptance before verified status. Broaden regression for changed shared contracts/dependencies. Preserve still-valid earlier checks with a reason; don't rerun every product suite after each small edit. Investigate repeated identical failures before broad retrying.
+- Choose implementation/testing order to fit the change; a prior failing test run is not required.
+- Complete meaningful regression/contract coverage and applicable unit, integration, and end-to-end acceptance.
+- Test observable behavior and invariants; avoid tests that duplicate implementation.
+- Cover relevant errors, validation, permissions, empty states, concurrency, retries, idempotency, and boundaries.
+- Diagnose observed regressions and complete missing coverage; record only checks actually performed.
+- For documentation-only changes, validate documents/schemas/affected behavior without claiming application acceptance.
+- Use existing project test tools when sufficient.
+- Run focused checks during iteration; complete required integration acceptance before verified status.
+- Broaden regression checks for changed shared contracts/dependencies.
+- Reuse still-valid results with an explicit reason; rerun affected checks after changes.
+- Investigate repeated identical failures before retrying broad suites.
 
 ## Telemetry
 
-Use the project's existing observability system. Cover relevant workflow starts/outcomes, errors, state transitions, dependency calls, durations, correlation and recovery in structured events/metrics/traces appropriate to the component. Preserve trace/correlation propagation across actual runtime boundaries. Verify meaningful events and error paths in tests and runtime evidence where applicable.
-
-Do not log secrets, tokens or unrestricted customer records. Do not duplicate events in every layer, add log noise to trivial helpers, or build a new telemetry framework merely to satisfy this rule. Comprehensive means the actual workflow and failure paths are diagnosable.
+- Use the project's existing observability facilities.
+- Cover workflow starts/outcomes, errors, state transitions, dependency calls, timing, correlation, and recovery.
+- Use structured events, metrics, or traces appropriate to the component.
+- Preserve correlation across actual runtime boundaries.
+- Verify meaningful telemetry and failure paths through tests and applicable runtime evidence.
+- Exclude secrets, tokens, and unrestricted customer records from logs and reports.
+- Avoid duplicate events and noise from trivial helpers; keep workflows and failures diagnosable.
 
 ## UI and database acceptance
 
-For UI changes, cover all designed functionality, states and end-to-end workflows with applicable Playwright checks. Inspect real rendered behavior, responsive states, keyboard/accessibility and failure/recovery experience; screenshots alone are not workflow proof. Mocks/component tests support development but do not replace required real-stack acceptance.
+### UI
 
-Database-backed acceptance uses a real testing copy. Before mutation-capable QA, verify the intended copy, actual connection identity, and every participating app/admin/migration/test/worker process's target. Use the project's established guard and runtime identity query, such as PostgreSQL `select current_database()`. Names or environment variables alone do not prove the active connection. Never fall back to a source/production DB when the copy is missing. Independently assert effects, tenant isolation and required data preservation. Keep secrets out of reports.
+- Cover all designed functionality, states, and end-to-end workflows with applicable Playwright checks.
+- Inspect real rendered behavior, responsive states, keyboard/accessibility, and failure/recovery experience.
+- Use screenshots as supporting evidence, not workflow proof alone.
+- Use mocks/component checks for development; complete required acceptance against the real stack.
 
-CLI-only work does not acquire a fictional UI gate. Missing applicable UI/DB environments are explicit blockers to that acceptance; they never count as passes or become silent skips.
+### Database
+
+- Use a real testing copy for database-backed acceptance.
+- Before mutation-capable QA, verify copy provenance and actual connection identity for every participating app/admin/migration/test/worker process.
+- Use the established guard and runtime identity query, such as PostgreSQL `select current_database()`.
+- Do not infer connection identity from names or environment variables alone.
+- If the copy is unavailable, report the blocker; never fall back to source/production databases.
+- Independently assert required effects, tenant isolation, and data preservation.
+- Keep credentials and sensitive records out of evidence.
+
+### Applicability
+
+- Apply UI/DB gates only when relevant; CLI-only work does not invent a UI requirement.
+- Missing required environments or evidence block acceptance; they are not passes or silent skips.
 
 ## Engineering review
 
-Inspect the actual diff and affected call paths after implementation. Record files/findings and how they were resolved. Review architecture, SOLID, reuse, unnecessary code/dependencies, validation/error handling, telemetry, accessibility and acceptance coverage. Use an independent reviewer for material architecture, shared-boundary, security or data-contract changes; otherwise identify the actual review method honestly.
-
-Distinguish introduced violations, affected pre-existing defects and unrelated debt. Fix required findings within scope; do not expand into unrelated legacy rewrites. Functional green tests do not excuse unresolved required engineering findings. A semantic review is necessary; a linter cannot prove SOLID.
+- Inspect the actual diff and affected call paths after implementation.
+- Use the Ponytail review integration above for code changes.
+- Check Clean Architecture, decoupling, SOLID, validation/error handling, telemetry, accessibility, and acceptance coverage.
+- Use an independent reviewer for material architecture, shared-boundary, security, or data-contract changes.
+- Record the actual reviewer/method, reviewed scope, findings, and resolutions.
+- Distinguish introduced violations, affected existing defects, and unrelated debt.
+- Resolve required findings within scope; avoid unrelated legacy rewrites.
+- Do not use passing functional tests to excuse unresolved required engineering findings.
+- Review architectural meaning explicitly; a linter alone cannot establish SOLID compliance.
 
 ## Evidence and freshness
 
-Use [the verification template](../assets/templates/verification.md) for one change-local `verification.md`. It is an evidence record, not another task tracker. Record:
+Use the [verification template](../assets/templates/verification.md) for one change-local `verification.md`.
 
-1. Change identity, target repository/worktree and explicit path bases; governing instructions and actual skill source/version where available.
-2. Tested commit plus relevant dirty/untracked file content identity; relevant test, fixture, configuration and dependency identity. A commit hash alone is insufficient in a dirty tree. Use existing harness identities or content hashes through existing tools; no new identity controller is needed.
-3. Requirement/scenario coverage, actual commands, environments, timestamps, exit/results and retained artifact paths.
-4. Review method, concrete findings/resolutions, and required UI/database/telemetry observations.
-5. Missing/skipped/failed checks, unresolved defects and whether finish is eligible.
+### Record
 
-Map relevant source, tests, fixtures, configuration, dependencies and accepted requirements to their checks. If any changes, invalidate affected evidence and rerun the appropriate checks. When relevance cannot be established, treat the evidence as stale. Record why unchanged prior evidence can be reused. Never convert a planned test, fixture, checked task or native `all_done` into a result.
+- Change identity, target repository/worktree, and explicit path bases.
+- Governing instructions and actual skills used, including available versions and overrides.
+- Tested commit plus relevant dirty/untracked content identities; commit identity alone is insufficient.
+- Relevant test, fixture, configuration, dependency, and accepted-requirement identities.
+- Requirement/scenario coverage, exact commands, environments, timestamps, results/exit codes, and evidence paths.
+- Review findings/resolutions and applicable UI/database/telemetry observations.
+- Failed, skipped, missing, or stale checks; unresolved defects; completion eligibility.
 
-Store raw reports/logs/screenshots/traces in the existing harness-owned paths. Only use `artifacts/development/<change>/<run>/` as an explicitly ignored/privacy-controlled fallback. Commit safe summaries and references, not secrets or unrestricted records. Use repository-root-relative references with a declared base, or identified external artifact locations; archive must not silently break references.
+### Assess freshness
 
-Work and verify update the report. Revise marks affected evidence invalid. Finish checks freshness before synchronization/archive and preserves it. Direct archive is not verified completion. Required failing, missing, skipped or stale evidence, or unresolved material review findings, prevents verified status and finish.
+- Map relevant source, tests, fixtures, configuration, dependencies, and requirements to their checks.
+- If relevant inputs change, invalidate affected evidence and rerun appropriate checks.
+- If relevance cannot be established, treat the evidence as stale.
+- Record why unchanged prior evidence remains valid.
+- Never turn a planned check, fixture, task checkbox, or native `all_done` into a passing result.
+- Use existing harness identities or content hashes; keep verification an evidence record rather than another task database.
 
-These are workflow gates with observable supporting checks, not a claim that prompt text provides infallible enforcement. Reuse CI and independent review where available.
+### Store evidence
+
+- Use existing harness-owned locations for logs, reports, screenshots, and traces.
+- Use `artifacts/development/<change>/<run>/` only as an explicitly ignored, privacy-controlled fallback.
+- Commit safe summaries and references; exclude secrets and unrestricted records.
+- Declare repository-relative or external path bases; keep references resolvable after archival.
+
+### Complete the change
+
+- Work and verify update evidence; revise invalidates affected evidence.
+- Finish checks freshness before specification synchronization/archive and preserves the evidence.
+- Block verified status and finish on required failures, missing checks, mandatory skips, stale evidence, or unresolved material findings.
+- Archival alone is not verified delivery.
+- Support these instruction-based gates with actual checks, CI, and independent review where applicable.
