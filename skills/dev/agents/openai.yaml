@@ -1,0 +1,4 @@
+interface:
+  display_name: "Development Workflow"
+  short_description: "Design, plan, build and verify with OpenSpec"
+  default_prompt: "Use $dev status to inspect this project and show the next development command."
