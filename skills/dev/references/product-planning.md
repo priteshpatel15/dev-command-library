@@ -1,46 +1,79 @@
 # Product design and roadmap
 
-Read with actual Ponytail and the relevant command contract. Use the useful product-definition concepts from `specify-product`: purpose, people, journeys, constraints, acceptance and delivery outcomes. This library does not invoke its compiler, hash-approval runtime, program manifests, execution packets or `develop-product` handoff. Keep that original skill intact.
+## Purpose and use
 
-## Design a new effort
+- Use for `$dev design` and `$dev revise --effort`.
+- Define the product experience and delivery outcomes; each selected OpenSpec change owns its detailed technical solution and tasks.
+- Load and apply actual Ponytail through [command routing](../SKILL.md#command-routing); honor its loading and override rules.
+- Apply [engineering requirements](engineering-and-verification.md) to architectural decisions and acceptance.
+- Design does not require OpenSpec initialization or invoke `specify-product` / `develop-product` workflows.
 
-Inspect the current product where one exists. Trace the relevant user actions to actual interfaces and data effects before declaring reuse or replacement. Distinguish observed behavior from proposed behavior.
+## Inputs
 
-Clarify decisions that materially change the product or acceptance. State routine defaults. Record:
+- User goal, selected effort, or revision feedback.
+- Target repository, governing instructions, and current product behavior.
+- Existing design, requirements, scenarios, decisions, roadmap, and delivery evidence.
+- Constraints, accepted scope, and unresolved material decisions.
 
-- Goal, users, operating context, success criteria and explicit boundaries.
-- Complete user journeys and observable outcomes, including important empty/loading/error/permission/recovery states.
-- Supported behavior, data effects, compatibility and accessibility expectations.
-- Meaningful component boundaries, ownership and dependency constraints; reuse opportunities grounded in the project.
-- Acceptance outcomes and any unresolved material decisions.
+## Discovery
 
-Use [the design template](../assets/templates/design.md) when no equivalent canonical document exists. Adapt sections to the actual effort; omit inapplicable ceremony. Screens, interaction examples and diagrams belong here when they clarify decisions. Do not prescribe exact implementation tasks for the whole roadmap.
+- Inspect relevant source, interfaces, tests, configuration, and retained evidence.
+- Trace affected user actions to actual interfaces and data effects before proposing reuse or replacement.
+- Distinguish observed behavior, accepted requirements, and proposed changes.
+- Ask about unresolved choices that materially affect scope, behavior, or acceptance; record routine defaults as proposals.
 
-Ponytail at design asks whether proposed complexity is necessary to the requested experience. It can identify optional/deferred ideas; it cannot silently remove accepted requirements. Clean Architecture does not imply a new service, package or interface for each noun.
+## Product design
 
-## Roadmap
+- Define the goal, users, operating context, observable success, and scope boundaries.
+- Describe complete supported journeys and relevant empty, loading, error, permission, and recovery states.
+- Specify data effects, compatibility, accessibility, and other accepted quality requirements.
+- Identify meaningful module/component ownership, dependency direction, and evidence-backed reuse opportunities.
+- Preserve requirement/scenario IDs and define observable acceptance outcomes.
+- Record accepted decisions, justified deferrals, and material open questions; deferral does not remove an accepted requirement.
+- Add screens, interaction examples, or diagrams when they clarify behavior.
 
-Use [the roadmap template](../assets/templates/roadmap.md). Give each outcome a stable ID, an observable result, dependencies, acceptance boundary and change links. Prefer complete user outcomes over isolated frontend/backend phases. A large outcome can need several bounded OpenSpec changes. Plan detailed work only for the next selected change.
+## Outcome roadmap
 
-Readiness means prerequisites are satisfied and material decisions for that slice are resolved. Several ready outcomes require explicit selection when no conversation target disambiguates. A direct bounded bug can bypass product documents and enter plan.
+- Give each outcome a stable ID, observable result, dependencies, acceptance boundary, and links to its OpenSpec changes.
+- Prefer complete user outcomes over separate frontend/backend phases.
+- Allow several bounded changes for a large outcome; detail only the next selected change through `$dev plan`.
+- Mark an outcome ready only when prerequisites are satisfied and material decisions are resolved.
+- When several outcomes qualify, use an explicit or unambiguous conversation selection; otherwise ask.
+- Keep delivery intent in the roadmap, implementation tasks in OpenSpec, and acceptance proof in verification records.
+- Link verified delivery evidence; claim an outcome complete only when its full acceptance boundary is covered.
+- Do not duplicate task checklists or invent independent completion percentages.
 
-The roadmap owns delivery intent and dependencies. Native tasks own implementation progress. Verification owns evidence. Do not duplicate checklists or invent independent completion percentages. A delivery note links verified change evidence; an outcome is complete only when its entire acceptance boundary is covered.
+## Outputs
+
+- Reuse suitable canonical documents; create only missing artifacts.
+- Default design: `docs/development/<effort-id>/design.md`, using the [design template](../assets/templates/design.md).
+- Default roadmap: `docs/development/<effort-id>/roadmap.md`, using the [roadmap template](../assets/templates/roadmap.md).
+- Adapt templates to the effort; omit inapplicable sections and link existing requirements rather than copying them.
+- Keep design and roadmap links explicit about the target repository and path base.
 
 ## Adopt an existing effort
 
-1. Identify canonical design, requirements, acceptance matrix, decisions, code, tests and retained receipts. Record their paths; don't copy their full contents into new documents.
-2. Preserve accepted IDs, scenarios, dependencies and reusable implementation. Build a crosswalk only where needed to map old groups to outcome IDs; retain existing crosswalks by reference.
-3. Classify work as verified, implemented pending verification, or remaining from actual source and evidence. A checkmark, old process label, prototype or passing mock suite does not prove current integrated acceptance.
-4. Create only missing roles, normally a new roadmap referencing the existing design. Keep approved or hash-governed source packages intact; an intentional amendment is separate from importing delivery links.
-5. Explicitly identify superseded execution directions and their replacement. Preserve historical requirements and receipts. Avoid leaving two documents claiming to be the current execution authority. Never let legacy automatic continuation expand a new single-change request.
-6. Select one bounded remaining outcome for plan. Do not restart completed work to change its document format.
+- Identify canonical documents, code, tests, and retained evidence; preserve accepted IDs, scenarios, dependencies, and reusable implementation.
+- Add a crosswalk only when needed to connect old groups to roadmap outcomes; reuse existing crosswalks.
+- Classify work as verified, implemented pending verification, or remaining using actual source and evidence.
+- Never treat checkmarks, prototypes, process labels, or mock-only results as integrated acceptance.
+- Preserve existing designs and completed work; adoption normally adds a missing roadmap rather than recreating the effort.
+- Name superseded execution instructions and their replacement; retain historical requirements and evidence.
+- Keep one current delivery authority; legacy automatic-continuation rules must not expand the selected scope.
+- Preserve protected or hash-approved source packages; propose an explicit amendment when a change is needed.
 
-## Revisions
+## Effort revision
 
-Product-level feedback updates the selected canonical design/roadmap and identifies affected active change plans. Preserve acceptance unless the user explicitly changes it. Technical decisions within accepted behavior stay in the change's technical design.
-
-When source documents are protected by another approval process, propose an explicit amendment instead of rewriting them through adoption. Do not imply that OpenSpec automatically exports or imports a `specify-product` package.
+- Update only the selected canonical design/roadmap within the authorized feedback scope.
+- Preserve accepted behavior and acceptance unless the user explicitly changes them.
+- Identify affected OpenSpec changes and potentially stale implementation/evidence; report impacts without editing their artifacts implicitly.
+- Use separately selected change revision for detailed technical decisions, task reopening, and evidence invalidation.
+- Do not imply automatic import/export with `specify-product` packages or bypass their approval process.
 
 ## Handoff to plan
 
-The roadmap row and linked product design are the inputs; the user need only name the outcome. Plan reads the source files directly. The resulting native proposal links its effort/outcome and code repository. No copy-paste prompt packet or new controller is required.
+- Present exact artifact paths, unresolved material decisions, and one next command; stop for review without implementing.
+- After review, recommend `$dev plan <effort-id>/<outcome-id>` for one selected outcome; run plan only when requested.
+- Let plan read the source documents directly and link the effort/outcome and target repository in the native change; do not create a prompt packet.
+- If OpenSpec is absent, direct to `$dev setup` before plan; do not initialize it implicitly.
+- Allow a clear, bounded standalone fix to enter plan without creating a product design or roadmap.
