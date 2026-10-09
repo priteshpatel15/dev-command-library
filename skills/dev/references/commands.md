@@ -1,117 +1,242 @@
 # Command reference
 
-These commands are messages to Codex. Angle brackets describe required input; square brackets describe optional input. They are not characters to type. Natural-language arguments are interpreted by the agent; there is no shell argument parser.
+- Enter commands in Codex chat; arguments are natural language, not shell syntax.
+- `<value>` means required input; `[value]` means optional input. Omit the brackets when typing.
+- Follow [SKILL.md](../SKILL.md) for target selection, shared rules, dependency loading, and handoffs.
 
-| Command | Use it when |
+| Command | Purpose |
 | --- | --- |
-| `$dev setup` | Prepare a repository once, or diagnose/repair its integration |
-| `$dev design <goal or source>` | Define a product/large enhancement or adopt an existing effort |
+| `$dev setup` | Prepare or repair project integration |
+| `$dev design <goal or source>` | Design a product/improvement or adopt existing work |
 | `$dev plan [outcome or request]` | Prepare one change for review |
-| `$dev work [change]` | Implement or resume it, including required QA |
-| `$dev verify [change]` | Obtain a fresh acceptance review or refresh stale evidence |
+| `$dev work [change]` | Implement or resume, including QA |
+| `$dev verify [change]` | Assess acceptance and refresh evidence |
 | `$dev revise <feedback>` | Revise the selected change plan |
-| `$dev revise --effort <id> <feedback>` | Revise product direction or roadmap |
-| `$dev finish [change]` | Close a currently verified change |
-| `$dev status` | See state, artifacts, blockers and the next command |
-
-For an explicit change revision, name the change in the request, e.g. `$dev revise onboarding-invitations "Keep existing invitation expiry behavior"`. Bare `$dev` shows status and this card. Unknown commands do not mutate files.
+| `$dev revise --effort <id> <feedback>` | Revise product design and roadmap |
+| `$dev finish [change]` | Close one verified change |
+| `$dev status` | Report state, blockers, and next command |
 
 ## Selection and shared inputs
 
-Read applicable project instructions and current artifacts from disk. An explicit repository or change takes precedence over a conversational reference; otherwise use the sole compatible target. Ask when multiple candidates fit. A bare plan selects the next unambiguous ready outcome, not an arbitrary item in a parallel-ready set. Do not use recency as selection. Respect an explicitly selected OpenSpec store throughout its native operations; record the target code repository separately.
-
-Every mutating command reports the exact paths it created or updated. Do not overwrite unrelated dirty files or treat prior checked boxes as passing acceptance. Repeating a command should reuse its selected existing artifacts when compatible with the request. Do not silently create a second similarly named change.
+- Read current project instructions and artifacts from disk.
+- Bare `$dev` shows read-only status and the command card; unknown operations show the card without writes.
+- For bare plan, select only an unambiguous ready outcome; ask if several qualify.
+- Preserve an explicitly selected OpenSpec store throughout native operations; identify the code repository separately.
+- Reuse compatible existing artifacts when repeating a command; do not create duplicate changes.
+- Treat task checkboxes as progress, not acceptance evidence.
 
 ## Setup
 
-**Input:** working repository, existing instructions/configuration, OpenSpec/Ponytail installations, build/test/database/UI tooling.
+**Purpose:** Prepare project instructions and OpenSpec integration.
 
-Inspect before editing. Discover actual layers, test commands, existing architecture checks, harness output paths, database isolation guards, and telemetry conventions. If absent, initialize OpenSpec using the installed CLI's supported Codex integration. Setup explicitly authorizes project initialization, not a tool upgrade, destructive reset, schema replacement, or live-system access.
+**Inputs**
+- Discover repository rules, installed dependencies, architecture, test/UI/DB tooling, telemetry, and evidence locations.
 
-Create or merge a bounded development-workflow section in root `AGENTS.md`, preserving existing and nested instructions. Put project-specific boundaries and concrete commands there or link their canonical maintained runbook. Reference those rules from OpenSpec context/artifact/operation guidance; preserve the user's schema and configuration. Configuration guidance is advisory, not executable enforcement. Avoid rewriting CLI-generated skills; use the supported CLI integration mechanism if required skills are missing.
+**Actions**
+- Follow [OpenSpec setup](openspec-workflow.md#setup).
+- Initialize missing OpenSpec integration through the installed CLI; preserve existing schemas and configuration.
+- Merge a bounded workflow section into root `AGENTS.md`; preserve existing and nested instructions.
+- Record concrete project boundaries and commands, or link their canonical runbook.
+- Reference project rules from supported OpenSpec context/artifact/operation guidance; that prose is advisory, not executable enforcement.
+- Use native integration generation/update for missing workflows; keep generated skills vendor-owned.
 
-**Writes:** `AGENTS.md`, bounded OpenSpec configuration changes, CLI-generated integration files when needed; ignore rules only when creating an owned raw-output location. **Stop:** ready, or a concrete missing dependency/configuration conflict with its remedy. No product documents, code or acceptance claims.
+**Writes**
+- `AGENTS.md`, bounded OpenSpec configuration, and required CLI-generated integration files.
+- Ignore rules only when creating an owned raw-output location.
+- No product documents/code, tool upgrades, destructive resets, schema replacement, or live-system access.
+
+**Stop / next**
+- Ready: report integration status and the next command for the observed project state.
+- Blocked: identify the missing dependency/configuration conflict and remedy.
+- Do not claim product acceptance from setup.
+
+**Example:** `$dev setup`
 
 ## Design
 
-**Input:** goal, source document(s), or selected existing effort; governing rules and relevant existing implementation.
+**Purpose:** Define the intended experience and outcome roadmap, or adopt existing work.
 
-Use [product planning](product-planning.md), with actual Ponytail loaded. Produce a complete intended experience and an outcome roadmap. Resolve material ambiguity interactively; record minor proposed defaults. Reuse canonical design documents when suitable. Preserve accepted requirements and classify existing work using evidence.
+**Inputs**
+- User goal, source documents, or selected effort; discover governing rules and relevant implementation.
 
-**Writes:** normally `docs/development/<effort-id>/design.md` and `roadmap.md`, or selected equivalents. Optional diagrams/wireframes are linked only when useful. **Stop:** reviewable design/roadmap with material open decisions stated. No implementation. Design works before OpenSpec initialization.
+**Actions**
+- Follow [product planning](product-planning.md); OpenSpec initialization is not required.
+- Resolve material ambiguity with the user; record minor proposed defaults.
+- Reuse suitable canonical documents and preserve accepted requirements.
+- Classify existing work using evidence.
 
-Example: `$dev design "Administrator invitations and secure member onboarding"`.
+**Writes**
+- Normally `docs/development/<effort-id>/design.md` and `roadmap.md`, or their selected equivalents.
+- Link diagrams/wireframes when useful; no implementation changes.
+
+**Stop / next**
+- Present reviewable design/roadmap and unresolved material decisions.
+- After review, use plan for one selected outcome; use setup first if OpenSpec is absent.
+
+**Example:** `$dev design "Administrator invitations and secure member onboarding"`
 
 ## Plan
 
-**Input:** `effort-id/outcome-id`, a clear request, or the sole ready outcome; product design, main capability specs, relevant source/tests/configuration.
+**Purpose:** Prepare exactly one bounded OpenSpec change for review.
 
-Resolve the OpenSpec root first. If uninitialized, direct the user to setup without implicitly initializing. Load Ponytail and the installed proposal skill; inspect actual impact before drafting. Create exactly one bounded change using native artifact instructions. Include implementation and required verification tasks. Record reusable components, necessary additions, affected boundaries and dependency direction in the technical design, or concise proposal/task notes when no technical design is warranted.
+**Inputs**
+- An `effort-id/outcome-id`, clear request, or sole ready outcome.
+- Relevant product design, main capability specs, source, tests, and configuration.
 
-**Writes:** CLI-created change metadata and schema-required artifacts; a link on the owned roadmap row when applicable. Native spec-driven usually means proposal, spec deltas, conditional design and tasks. No custom verification pass yet. **Stop:** artifacts ready for review; no product-code edits. Preserve the native proposal-to-apply review boundary.
+**Actions**
+- Resolve the native OpenSpec root; if absent, return setup without initializing implicitly.
+- Follow [OpenSpec planning](openspec-workflow.md#plan) and native proposal/artifact instructions.
+- Inspect implementation impact and include required implementation and verification tasks.
+- Record reuse, necessary additions, affected boundaries, and dependency direction in technical design or proposal/task notes when design is unnecessary.
+- Allow standalone fixes without inventing a product roadmap.
 
-Example: `$dev plan onboarding/M01`. A direct request such as `$dev plan "Fix the expired-session redirect loop"` does not require inventing a product roadmap.
+**Writes**
+- CLI-created change metadata and schema-required artifacts: normally proposal, spec deltas, conditional design, and tasks.
+- The owned roadmap link when applicable; no product-code changes or verification pass claims.
+
+**Stop / next**
+- Present artifacts for review; preserve the native proposal-to-apply review boundary.
+- Start work only after an explicit request.
+
+**Example:** `$dev plan onboarding/M01` or `$dev plan "Fix the expired-session redirect loop"`
 
 ## Work
 
-**Input:** selected prepared change, current code/tests, governing rules, upstream constraints and prior verification.
+**Purpose:** Implement or resume the selected change through required QA and review.
 
-Load actual Ponytail and native apply instructions. Implement the accepted outcome using existing project components and complete required test coverage. Choose implementation/testing order to fit the change. Investigate all affected callers, tests, fixtures, configuration, exports and contracts. Keep concurrent ownership disjoint. Ordinary fixes remain inside this operation. A material discovery changing accepted scope/behavior requires revision before dependent implementation.
+**Inputs**
+- Prepared change, current code/tests, governing rules, upstream constraints, and prior evidence.
 
-Run relevant automated checks and complete required integration, UI and copied-database acceptance. Inspect the actual UI experience, telemetry and effects. Fix defects and rerun invalidated checks until acceptance passes, or report the specific unresolved dependency. Do not repeat a failing broad run without investigating its cause. Record only checks actually run; a prior failing test run is not required.
+**Actions**
+- Follow native apply instructions and [engineering and verification](engineering-and-verification.md).
+- Inspect affected callers, tests, fixtures, configuration, exports, and contracts; reuse existing components.
+- Choose implementation/testing order freely; a prior failing test run is not required.
+- Complete required automated, integration, UI, and copied-database acceptance; inspect rendered experience, telemetry, and effects.
+- Fix ordinary defects and rerun invalidated checks; diagnose a failed broad run before repeating it.
+- If findings materially change accepted scope/behavior, return to revise before dependent implementation.
+- Record only checks actually performed.
 
-**Writes:** scoped source/tests/config/migrations/docs, task completion, change-local `verification.md`, and harness-owned raw evidence. **Stop:** acceptance and engineering review pass, or a concrete blocker/material decision. Missing environments remain incomplete acceptance. This command is also resume.
+**Writes**
+- Scoped source/tests/configuration/migrations/docs, task progress, change-local `verification.md`, and harness-owned evidence.
 
-Example: `$dev work onboarding-invitations`.
+**Stop / next**
+- Passed: current acceptance and required engineering review pass; report finish as the next action.
+- Blocked: identify the unresolved dependency or material decision; missing environments remain incomplete acceptance.
+
+**Example:** `$dev work onboarding-invitations`
 
 ## Verify
 
-**Input:** acceptance artifacts, actual implementation, existing evidence and its tested identities.
+**Purpose:** Assess current acceptance and refresh evidence.
 
-Load Ponytail. Check which previous results still apply, inspect changed paths and required review findings, and run missing or invalidated available checks. Follow [engineering and verification](engineering-and-verification.md). A separate review need not rerun unchanged valid evidence without reason.
+**Inputs**
+- Accepted requirements, actual implementation, existing evidence, and tested identities.
 
-**Writes:** `verification.md` and test-run evidence only. Safely isolated test-data mutations may be part of authorized QA. Do not edit product code, test implementation, accepted requirements, snapshots used as expected results, or task completion; missing tests and defects return to work. **Stop:** honest coverage, review and freshness result, with exact gaps and next command.
+**Actions**
+- Follow [engineering and verification](engineering-and-verification.md).
+- Inspect changed paths, evidence freshness, and required review findings.
+- Run missing or invalidated available checks; reuse unchanged valid evidence with a reason.
+
+**Writes**
+- `verification.md` and test-run evidence only.
+- Safely isolated test-data mutations are permitted within authorized QA.
+- Do not edit product code, tests, accepted requirements, expected-result snapshots, or task completion.
+
+**Stop / next**
+- Report actual coverage, review results, freshness, and exact gaps.
+- Return defects or missing tests to work; report finish only when current acceptance and required engineering review pass with no required gaps.
+
+**Example:** `$dev verify onboarding-invitations`
 
 ## Revise
 
-**Input:** feedback plus an explicit/unambiguous change; `--effort <id>` explicitly selects product-level revision.
+**Purpose:** Update selected planning artifacts in response to feedback.
 
-Load Ponytail. At product level, preserve accepted source authority and update the selected design/roadmap; identify dependent changes needing revision. At change level, use the native update skill's artifact instructions and review interactions. Changes to intent may require a new change rather than repurposing an existing one. Do not use update to invent unstarted artifacts outside its native scope; route to plan.
+**Inputs**
+- Feedback and an explicit/unambiguous change; `--effort <id>` selects product-level revision.
 
-**Writes:** authorized affected planning documents, affected verification-validity notes, and reopening affected tasks. **Stop:** coherent revision ready for review. No code or fabricated fresh evidence. If only part of a proposed revision is accepted, report remaining inconsistency; do not mark the plan ready or continue implementation through it.
+**Actions**
+- For an effort, follow [product planning](product-planning.md): preserve canonical authority and identify dependent changes needing revision.
+- For a change, follow [OpenSpec revision](openspec-workflow.md#revise) and native artifact-level review interactions.
+- Route unstarted artifacts outside native update scope to plan.
+- If intent changes, assess whether a new change is needed instead of repurposing the existing one.
+
+**Writes**
+- Authorized planning documents, evidence-validity notes, and reopening of affected tasks.
+- No implementation or fabricated fresh evidence.
+
+**Stop / next**
+- Present a coherent revision for review.
+- If only part is accepted, report remaining inconsistencies; do not declare readiness or continue implementation through them.
+
+**Example:** `$dev revise onboarding-invitations "Keep existing invitation expiry behavior"`
+
+**Effort example:** `$dev revise --effort onboarding "Defer bulk invitations"`
 
 ## Finish
 
-**Input:** current acceptance evidence, resolved material engineering findings, task state, spec deltas and an optional roadmap association.
+**Purpose:** Synchronize specifications and archive one verified change.
 
-Confirm evidence matches the relevant current source/tests/configuration/fixtures/dependencies and accepted scope. All required acceptance and review obligations must pass; native task completion or `all_done` does not establish this. Do not close on failed, skipped mandatory, missing or stale evidence. Report work for defects or verify for evidence gaps.
+**Inputs**
+- Current acceptance evidence, resolved material findings, task state, spec deltas, and optional roadmap association.
 
-Use native spec synchronization and archive workflows. If deltas require sync, verify the main specs reflect them before archiving. Required sync declined or failed leaves finish incomplete and the change unarchived. Honor applicable native review interactions without asking for already-resolved authorization. Move the whole native change directory and preserve its metadata/evidence. Update only its owned roadmap delivery links and confirm references still resolve.
+**Actions**
+- Check evidence against current source/tests/configuration/fixtures/dependencies and accepted scope.
+- Require all applicable acceptance and reviews to pass; checked tasks or native `all_done` are insufficient.
+- Block closure on failed, mandatory-skipped, missing, or stale evidence; route defects to work and evidence gaps to verify.
+- Follow [OpenSpec finish](openspec-workflow.md#finish); verify required spec synchronization before archival.
+- If required sync is declined or fails, leave the change active.
+- Preserve native review interactions and existing authorization.
+- Archive the whole change directory with metadata/evidence; update only owned roadmap links and check references resolve.
 
-**Writes:** main capability specs, archive move, owned roadmap links/delivery summary. **Stop:** exactly one change closed. No automatic next outcome, product commit, publication, deployment, production activation or messages. A partial contribution does not complete an entire roadmap outcome.
+**Writes**
+- Main capability specs, archive move, and owned roadmap links/delivery summary.
+
+**Stop / next**
+- Report exactly one closed change and its evidence.
+- A partial contribution does not qualify the whole roadmap outcome.
+- Do not automatically start another outcome, commit product work, publish, deploy, activate production, or send messages.
+
+**Example:** `$dev finish onboarding-invitations`
 
 ## Status
 
-Read artifacts and evidence only. Missing OpenSpec/Ponytail can be diagnosed without installing anything. Present effort/change, state, artifact locations, blockers and one next command. Derive state rather than creating a tracking file:
+**Purpose:** Report observed state and the exact next action.
 
-For an initialized project with no effort/change, suggest `$dev design "<goal>"`, or `$dev plan "<bounded request>"` when the request already supplies a small change. Do not send the user back to status immediately after reporting status when a concrete next stage is available.
+**Inputs**
+- Current project/effort/change artifacts and evidence; dependencies may be missing.
 
-- **Planning:** proposed scope/artifacts incomplete or awaiting review.
-- **Implementation pending verification:** code or task progress exists, but required current evidence does not.
-- **Verified:** current acceptance and required reviews pass.
-- **Blocked:** a concrete prerequisite prevents the selected next action; describe how it clears.
-- **Archived:** native archive exists; separately state whether verified delivery is supported.
+**Actions**
+- Inspect artifacts and evidence; diagnose missing OpenSpec/Ponytail without installing them.
+- Derive state from evidence using the definitions below.
+- When reporting whether a process is live, check retained terminal receipts or actual process state; an old `running` label is insufficient.
+- Check code/test identities before claiming they are unchanged.
 
-Do not interpret a historical `running` label as a live process. Use a retained terminal receipt or observed process state. Do not claim a code/test identity is unchanged without checking it.
+**Writes**
+- None; do not create a tracking file.
+
+**Stop / next**
+- Report selected target, state, artifact locations, blockers, and one actionable next command.
+- If initialized with no effort/change, suggest design, or plan when the request already defines a bounded change.
+- If a concrete next stage exists, do not suggest status again.
+
+**Example:** `$dev status`
+
+### State definitions
+
+| State | Evidence |
+| --- | --- |
+| Planning | Scope/artifacts incomplete or awaiting review |
+| Implementation pending verification | Code/task progress exists without required current evidence |
+| Verified | Current acceptance and required reviews pass |
+| Blocked | A concrete prerequisite prevents the selected action; explain how to clear it |
+| Archived | Native archive exists; separately assess verified delivery |
 
 ## Everyday sequences
 
-New product: `$dev setup` → `$dev design "goal"` → review → `$dev plan` → review → `$dev work` → `$dev finish`.
-
-Existing effort: `$dev design docs/existing-design.md` (include its checklist/evidence) → review adopted roadmap → `$dev plan effort/W01` → review → `$dev work`.
-
-Small fix: `$dev plan "request"` → review → `$dev work` → `$dev finish`.
-
-Returning session: `$dev status` → suggested `$dev work <change>`, `$dev verify <change>`, or another concrete command.
-
-After every operation, report selected target, exact artifacts, evidence/limitation and next command. No additional start/resume/next/approve primitives are necessary.
+- **New product:** setup → design → review → plan → review → work → finish.
+- **Existing effort:** design using existing documents/checklist/evidence → review adopted roadmap → plan the selected outcome → review → work.
+- **Small fix:** plan the request → review → work → finish.
+- **Returning session:** status → the suggested work, verify, or other concrete command.
+- Report target, exact artifacts, evidence/limitations, and next command after every operation.
+- Use existing commands for start/resume/next/review; do not add parallel workflow primitives.
