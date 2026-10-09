@@ -56,9 +56,9 @@ Example: `$dev plan onboarding/M01`. A direct request such as `$dev plan "Fix th
 
 **Input:** selected prepared change, current code/tests, governing rules, upstream constraints and prior verification.
 
-Load actual Ponytail and native apply instructions. Implement the accepted outcome with test-first development and existing project components. Investigate all affected callers, tests, fixtures, configuration, exports and contracts. Keep concurrent ownership disjoint. Ordinary fixes remain inside this operation. A material discovery changing accepted scope/behavior requires revision before dependent implementation.
+Load actual Ponytail and native apply instructions. Implement the accepted outcome using existing project components and complete required test coverage. Choose implementation/testing order to fit the change. Investigate all affected callers, tests, fixtures, configuration, exports and contracts. Keep concurrent ownership disjoint. Ordinary fixes remain inside this operation. A material discovery changing accepted scope/behavior requires revision before dependent implementation.
 
-Run relevant automated checks and complete required integration, UI and copied-database acceptance. Inspect the actual UI experience, telemetry and effects. Fix defects and rerun invalidated checks until acceptance passes, or report the specific unresolved dependency. Do not repeat a failing broad run without investigating its cause. Do not fabricate earlier RED evidence for code already written.
+Run relevant automated checks and complete required integration, UI and copied-database acceptance. Inspect the actual UI experience, telemetry and effects. Fix defects and rerun invalidated checks until acceptance passes, or report the specific unresolved dependency. Do not repeat a failing broad run without investigating its cause. Record only checks actually run; a prior failing test run is not required.
 
 **Writes:** scoped source/tests/config/migrations/docs, task completion, change-local `verification.md`, and harness-owned raw evidence. **Stop:** acceptance and engineering review pass, or a concrete blocker/material decision. Missing environments remain incomplete acceptance. This command is also resume.
 

@@ -1,6 +1,6 @@
 # Global development command library: approved implementation plan
 
-This document records the design approved before construction. It is a construction and acceptance reference, not a claim that its steps have passed. Actual library evaluation results belong in `tests/evidence/`; product completion belongs in project evidence.
+This document records the design approved before construction, amended on 2026-10-09 to allow flexible implementation/testing order while retaining required coverage and QA. It is a construction and acceptance reference, not a claim that its steps have passed. Actual library evaluation results belong in `tests/evidence/`; product completion belongs in project evidence.
 
 ## Goal and boundaries
 
@@ -74,11 +74,11 @@ Load the actual installed Ponytail skill for **design, plan, revise, work, and v
 | Verify | Review the actual diff for duplication, needless abstractions/dependencies, and incomplete scope. |
 | Finish | Require current acceptance and review before closure. |
 
-The governing principle is the smallest complete solution satisfying the product and engineering requirements. Clean Architecture governs high-level boundaries and dependency direction; decoupling and SOLID govern focused components and interfaces. Ponytail cannot silently weaken accepted functionality, TDD, comprehensive privacy-safe telemetry, accessibility, or required QA.
+The governing principle is the smallest complete solution satisfying the product and engineering requirements. Clean Architecture governs high-level boundaries and dependency direction; decoupling and SOLID govern focused components and interfaces. Ponytail cannot silently weaken accepted functionality, testing, comprehensive privacy-safe telemetry, accessibility, or required QA.
 
 `setup` preserves/extends `AGENTS.md` and references project authority from OpenSpec configuration. It discovers real module boundaries, test commands, architecture checks, and database guards. Reuse meaningful mechanical checks; use semantic engineering review for judgments that tests cannot establish. Material architecture, shared-contract, security, or data-contract changes receive independent review.
 
-Apply test-first development to meaningful behavior changes and edge cases. Complete required unit, contract, integration, and end-to-end coverage. All designed UI functionality and workflows require applicable Playwright coverage and experience inspection. Real database acceptance uses a testing copy, with actual connection identity established before mutation-capable tests. A missing copy is a blocker, not authority to use production.
+Choose implementation/testing order to fit the change; cover meaningful behavior changes and edge cases without requiring a prior failing test run. Complete required unit, contract, integration, and end-to-end coverage. All designed UI functionality and workflows require applicable Playwright coverage and experience inspection. Real database acceptance uses a testing copy, with actual connection identity established before mutation-capable tests. A missing copy is a blocker, not authority to use production.
 
 Verification records governing instructions/Ponytail, tested code/test/config/fixture identity including dirty changes, acceptance coverage, exact commands/results, engineering review, UI/database evidence, and unresolved findings. Checked tasks or OpenSpec `all_done` cannot qualify completion alone. Material edits invalidate affected proof; missing, failed, mandatory-skipped, stale, or materially unresolved evidence blocks `finish`.
 
@@ -86,7 +86,7 @@ Required spec synchronization must succeed before archival. Declining required s
 
 ## Build sequence and acceptance
 
-1. Create the dedicated source repository and behavioral scenarios before the skill instructions.
+1. Create the dedicated source repository and behavioral scenarios.
 2. Author the router, references, metadata, templates, documentation, diagrams, and maintenance procedures.
 3. Run the existing skill-creator validator and check references, metadata, consistency, and template usability.
 4. Evaluate realistic requests in isolated projects through independent agents; inspect actual artifacts and actions.
@@ -101,7 +101,7 @@ Required evaluations:
 |---|---|
 | Fresh and repeated setup | Correct initialization; existing configuration and unrelated work preserved. |
 | Design to roadmap to plan | Coherent outcomes/dependencies and one bounded change; review stops respected. |
-| Standalone CLI bug | No mandatory roadmap; meaningful failing test, complete work/verify/finish cycle. |
+| Standalone CLI bug | No mandatory roadmap; meaningful regression coverage, complete work/verify/finish cycle. |
 | Small UI fixture | Actual browser workflow evidence, experience review, and corrective work when needed. |
 | Ambiguous targets | Explicit selection required; unrelated work untouched. |
 | Existing checklist adoption | Requirements and reusable work retained; historical checks do not become proof. |
@@ -124,7 +124,7 @@ The initial `restaurant_data_integrator` handoff includes setup, design/roadmap 
 - Create/extend root project instructions from the user's governing requirements and actual conventions; reference them from OpenSpec configuration.
 - Reuse accepted operator-experience design, specification, verification matrix, ADR, scenario catalog, and retained evidence.
 - Create `docs/development/operator-experience/roadmap.md`, preserving W01–W08 dependencies, R01–R18, and all 118 scenario obligations.
-- Mark the former checklist's execution instructions superseded while preserving historical requirements, crosswalks, and receipts. Replace code-first and automatic-continuation instructions with test-first, manually selected changes.
+- Mark the former checklist's execution instructions superseded while preserving historical requirements, crosswalks, and receipts. Replace fixed implementation/testing order and automatic-continuation instructions with manually selected changes and required acceptance checks.
 - Reconcile actual implementation and retained evidence; do not infer qualification from old running state or checked boxes.
 - Prepare and validate **`complete-operator-inspection`** as the OpenSpec change for remaining W01 implementation and qualification.
 

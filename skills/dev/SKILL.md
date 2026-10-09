@@ -2,7 +2,7 @@
 name: dev
 description: Coordinate reusable product design, outcome roadmaps, and one OpenSpec change at a time with Ponytail and evidence-based QA. Use for $dev setup, design, plan, work, verify, revise, finish, or status, including adoption of an existing development effort.
 metadata:
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Development command library
@@ -13,7 +13,7 @@ metadata:
 
 1. Resolve the target code repository from the working environment and request. Read applicable `AGENTS.md` instructions. Respect dirty work and nested instructions. Resolve the effort/change from an explicit target, an unambiguous current conversation reference, or the sole compatible candidate. If several qualify, ask for a short selection; never choose by modification time or a global active-project pointer.
 2. For **design, plan, revise, work, and verify**, resolve and read the actual installed `ponytail:ponytail` skill using the session skill catalog. Use full by default, honoring explicit user overrides, including disabling it. Reuse an unchanged skill already read in this session. If it is required but unavailable, report the missing dependency and stop dependent work; a slogan or this document is not a substitute. Do not hardcode a versioned plugin-cache path.
-3. Read the relevant parts of [engineering and verification](references/engineering-and-verification.md). Preserve accepted behavior, Clean Architecture, decoupling, SOLID, test-first development, privacy-safe telemetry, and full applicable acceptance. Ponytail reduces unnecessary work, not these obligations. Pass the resolved scope, actual Ponytail instructions, governing rules and relevant artifacts to delegates; give concurrent contributors disjoint file ownership.
+3. Read the relevant parts of [engineering and verification](references/engineering-and-verification.md). Preserve accepted behavior, Clean Architecture, decoupling, SOLID, required testing, privacy-safe telemetry, and full applicable acceptance. Ponytail reduces unnecessary work, not these obligations. Pass the resolved scope, actual Ponytail instructions, governing rules and relevant artifacts to delegates; give concurrent contributors disjoint file ownership.
 4. Load only the references and installed skills needed below. Resolve dependencies before changing files. Use native OpenSpec context/status/instructions for its root, store, schema, artifact graph and output paths. For read-only discovery/status, set `OPENSPEC_TELEMETRY=0` on those subprocesses so first-run analytics metadata does not mutate configuration. Do not recreate its parser, schema or templates. [OpenSpec integration](references/openspec-workflow.md) defines the adapter.
 5. Execute only the selected operation. Work includes required QA and corrective iteration. Design/plan stop for review; a later explicit work request starts implementation. Status is read-only; verify writes evidence only. Finish closes one change. Material behavior/scope changes return to revision; ordinary defects remain within work.
 

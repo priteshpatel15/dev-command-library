@@ -25,11 +25,11 @@ Keep business behavior with its owning component, avoid duplicating it in UI/API
 
 The project `AGENTS.md` records concrete layers and commands; OpenSpec config points to that authority. Product design adds durable product constraints; native change design records the selected technical solution. Conflicts are surfaced, not silently resolved by the agent.
 
-## Test-first implementation
+## Implementation and testing
 
-Before nontrivial behavior changes, identify edge cases and add/run a focused failing regression or contract test. Implement until it passes, then refactor with required checks. Test observable behavior and meaningful invariants rather than duplicating implementation. Include applicable errors, validation, permissions, empty states, concurrency/retry/idempotency and boundary cases based on the change.
+Identify relevant edge cases and complete meaningful regression or contract coverage for nontrivial behavior changes. Choose implementation/testing order to fit the change; a prior failing test run is not required for acceptance. Test observable behavior and meaningful invariants rather than duplicating implementation. Include applicable errors, validation, permissions, empty states, concurrency/retry/idempotency and boundary cases based on the change.
 
-Adopting existing code does not permit inventing a historical failing run. Record the existing state, demonstrate current regressions where present, and add missing meaningful coverage before new implementation. Documentation-only changes need relevant structural/behavioral validation, not invented application tests. No new generic testing framework is needed when project tools suffice.
+Record the actual state and checks performed, diagnose observed regressions, and complete missing meaningful coverage. Do not invent historical test results. Documentation-only changes need relevant structural/behavioral validation, not invented application tests. No new generic testing framework is needed when project tools suffice.
 
 Focused tests support iteration; complete required integration acceptance before verified status. Broaden regression for changed shared contracts/dependencies. Preserve still-valid earlier checks with a reason; don't rerun every product suite after each small edit. Investigate repeated identical failures before broad retrying.
 

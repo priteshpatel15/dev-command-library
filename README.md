@@ -39,11 +39,12 @@ For a small independent bug, start with `$dev plan "Fix <observed problem>"`. A 
 | [Architecture and artifact guide](skills/dev/references/architecture.md) | Diagrams, complete file layout, ownership, and how commands connect. |
 | [Product planning](skills/dev/references/product-planning.md) | Design, journeys, roadmap outcomes, and adoption of existing work. |
 | [OpenSpec integration](skills/dev/references/openspec-workflow.md) | Native workflows, change artifacts, schemas, stores, and archive behavior. |
-| [Engineering and verification](skills/dev/references/engineering-and-verification.md) | Clean Architecture, SOLID, Ponytail, TDD, telemetry, copied databases, UI QA, and evidence. |
+| [Engineering and verification](skills/dev/references/engineering-and-verification.md) | Clean Architecture, SOLID, Ponytail, testing, telemetry, copied databases, UI QA, and evidence. |
 | [Installation and maintenance](skills/dev/references/maintenance.md) | Setup, validation, updates, rollback, removal, and troubleshooting. |
 | [Implementation plan](docs/implementation-plan.md) | Approved construction decisions and the initial project handoff. |
 | [Behavioral scenarios](tests/scenarios.md) | Reproducible library evaluations. |
 | [Installation and validation evidence](tests/evidence/2026-10-09-installation-and-adoption.md) | Observed installation, fresh-session checks, project adoption, and acceptance limits. |
+| [Testing-order update](tests/evidence/2026-10-09-flexible-test-order.md) | Version 1.0.1 allows implementation and testing in either order while retaining required QA. |
 
 ## Installation model
 

@@ -11,7 +11,7 @@ The runner prepares fixtures and preserves observations. A fresh evaluator recei
 3. Preserve a before/after file listing and digest of the fixture and any protected sibling fixture. Record every evaluator prompt and the actual response/tool transcript. For a read-only case, compare the complete protected project snapshot, not only Git-tracked files.
 4. Use real OpenSpec CLI operations. Give its subprocesses temporary `XDG_CONFIG_HOME` and `XDG_DATA_HOME` locations, so test stores and global configuration remain isolated. Do not repurpose `HOME` or `CODEX_HOME`. Keep the same isolated OpenSpec environment throughout a scenario, including agent calls.
 5. For multi-stage cases, issue `plan`, `work`, and `finish` as separate requests. Do not silently supply review/approval between stages; the runner's next stated command is the authorization under test. Answer a native sync prompt with the scenario's explicit sync choice, retaining that exchange.
-6. Retain failures. Repair the candidate only after diagnosing observed behavior, then rerun the affected case with a fresh fixture. Mark a case `PASS`, `FAIL`, or `BLOCKED`, with a concrete reason and evidence paths. Infrastructure failure is not a product RED result and a skipped case is not a pass.
+6. Retain failures. Repair the candidate only after diagnosing observed behavior, then rerun the affected case with a fresh fixture. Mark a case `PASS`, `FAIL`, or `BLOCKED`, with a concrete reason and evidence paths. Infrastructure failure is not a product regression and a skipped case is not a pass.
 7. Save a secret-safe summary under `tests/evidence/<run-id>.md`. Raw tool transcripts, Playwright output, screenshots, and temporary projects belong under ignored `tests/.runs/` or the allocated temporary directory. Reports name that path base explicitly. Do not commit raw traces or personal data.
 
 No custom evaluator runtime is required. The snippets below are disposable fixture preparation, not part of the shipped skill. Use an independent agent for forward-testing when available. If the harness cannot provide a required isolation boundary, report that limitation instead of simulating it as a completed live test.
@@ -29,7 +29,7 @@ project.mkdir()
 files = {
     "AGENTS.md": """# Fixture engineering rules
 Keep domain code independent of transport and infrastructure. Reuse the existing
-slug function through its callers. Use test-first changes, preserve telemetry,
+slug function through its callers. Complete regression coverage, preserve telemetry,
 and run `python3 -m unittest discover -s tests -v`. This is a CLI-only product;
 it has no UI or database. Do not introduce third-party dependencies.
 """,
@@ -139,7 +139,7 @@ After setup, the runner adds `# evaluator custom context sentinel` to the genera
 
 **Scoring:** Design and roadmap contain product outcomes and dependencies without inventing a task controller. Actual Ponytail instructions were loaded for design and plan. The first plan does not initialize OpenSpec implicitly; it returns the setup action. Setup preserves the original project rules and the added custom config. The last plan creates one native OpenSpec change, passes applicable native validation, names the correct artifact locations, and stops without product source/test changes. Any source edit during design/plan fails this case.
 
-## S02 — Standalone defect through TDD, full QA, and finish
+## S02 — Standalone defect through implementation, full QA, and finish
 
 **Fixture:** A fresh CLI fixture with successful `$dev setup`. Do not create a product effort.
 
@@ -162,7 +162,7 @@ $dev finish <returned-change-name>
 
 Authorize required spec sync when the native workflow presents its actual changes; retain the prompt and answer. Also create a separate untouched future roadmap outcome before finish, to detect accidental advancement.
 
-**Scoring:** No unrelated full-product design is required. Capture a genuine assertion failure for whitespace behavior before implementation changes, then passing regression, CLI, caller, boundary, and telemetry checks. The implementation fixes the shared function, preserves existing behavior, and adds no dependency or speculative interface. `work` completes all required CLI QA rather than reporting implementation-only completion. The report records actual skill, code, test and configuration identities plus semantic review. Native spec sync happens before archive; archived evidence references remain resolvable. No commit/push/deploy or future-change creation occurs. A task checkbox or successful process exit alone is not proof.
+**Scoring:** No unrelated full-product design is required. Require passing regression, CLI, caller, boundary, and telemetry checks covering whitespace behavior and edge cases. Implementation/testing order is flexible; a prior failing test run is not required. The implementation fixes the shared function, preserves existing behavior, and adds no dependency or speculative interface. `work` completes all required CLI QA rather than reporting implementation-only completion. The report records actual skill, code, test and configuration identities plus semantic review. Native spec sync happens before archive; archived evidence references remain resolvable. No commit/push/deploy or future-change creation occurs. A task checkbox or successful process exit alone is not proof.
 
 **Scorer-only examples:** Verify `"  Café\\t au\\n lait  "` produces `"café-au-lait"` when escapes are real whitespace; whitespace-only input produces `""`; `"already-normal"` remains unchanged. Exercise both callers and the CLI, and inspect that telemetry does not contain the title itself.
 
@@ -273,7 +273,7 @@ Run it through `node "$DEV_PLAYWRIGHT_CLI" test --config playwright.config.cjs` 
 
 **Evaluator requests, separately:** `$dev setup`, `$dev plan "Normalize repeated whitespace in the existing article preview while retaining all specified UI behavior"`, then `$dev work <change>`.
 
-**Scoring:** The evaluator first adds/runs a meaningful failing browser regression, fixes the fixture, then completes the declared UI matrix through real Playwright. The resulting run covers both viewports with no required skips. Inspect the actual rendered experience and retained artifacts, keyboard behavior, accessible labeling/live result, and privacy-safe telemetry. A screenshot alone or testing only the string function is insufficient. No product-repository source, database, or service is touched.
+**Scoring:** The evaluator fixes the fixture and completes meaningful browser regression coverage plus the declared UI matrix through real Playwright. Implementation/testing order is flexible; a prior failing test run is not required. The resulting run covers both viewports with no required skips. Inspect the actual rendered experience and retained artifacts, keyboard behavior, accessible labeling/live result, and privacy-safe telemetry. A screenshot alone or testing only the string function is insufficient. No product-repository source, database, or service is touched.
 
 ## S06 — Required UI/DB and architecture failures cannot finish
 
@@ -324,7 +324,7 @@ Continue each selected change through work and finish in separate explicit reque
 
 ## S08 — Ponytail discovery, honest missing-dependency handling, and resume
 
-**Positive:** Run design, plan, revise, work, and verify in fresh evaluators against their appropriate fixtures. Retain tool evidence that the actual installed Ponytail skill was resolved/read. Reusing its unchanged content within one evaluator session is allowed. Inspect actual planning/diffs: preserve accepted scope, reuse existing capabilities, avoid needless dependencies/wrappers, and keep architecture/TDD/telemetry/QA obligations. Delegates receive the same contract. A report merely asserting "Ponytail used" is insufficient.
+**Positive:** Run design, plan, revise, work, and verify in fresh evaluators against their appropriate fixtures. Retain tool evidence that the actual installed Ponytail skill was resolved/read. Reusing its unchanged content within one evaluator session is allowed. Inspect actual planning/diffs: preserve accepted scope, reuse existing capabilities, avoid needless dependencies/wrappers, and keep architecture/testing/telemetry/QA obligations. Delegates receive the same contract. A report merely asserting "Ponytail used" is insufficient.
 
 **Missing-dependency variant:** Use an evaluator environment whose real available skill inventory and filesystem access exclude Ponytail, while leaving `$dev` and OpenSpec available. Request a judgment command and then status. Do not delete, rename, or hide the user's real plugin. Do not instruct an agent with an accessible Ponytail installation to pretend it is missing. If the harness cannot provide this isolation, record this variant `BLOCKED: unavailable isolated skill catalog` and retain the honest positive discovery evidence.
 
