@@ -1,6 +1,13 @@
 # Development command library
 
-One reusable Codex skill for taking a development effort from product design through a verified OpenSpec change. Enter its commands in **Codex chat**, with the relevant project open.
+One global Codex skill for product design, outcome roadmaps, and delivery through one OpenSpec change at a time.
+
+## Start here
+
+- Open the target project in Codex.
+- Enter commands in **Codex chat**, not a terminal.
+- Use `$dev status` to resume an existing effort.
+- For a new effort, run the commands below individually. Replace placeholders with your goal, outcome, and change name.
 
 ```text
 $dev setup
@@ -10,7 +17,12 @@ $dev work <change-name>
 $dev finish <change-name>
 ```
 
-Review the design before planning a change, and review that change before requesting work. `work` includes implementation, required tests, UI/database QA, and corrective work. `finish` synchronizes specifications and archives an accepted change. It does not deploy or automatically start the next outcome.
+- Use `setup` when project integration is missing or needs repair.
+- Review the design/roadmap before `plan`; review the change before `work`.
+- `work` includes implementation, required tests, applicable UI/copied-database QA, review, and fixes.
+- `verify` is available for a separate evidence review; it is optional when acceptance is already current.
+- `finish` synchronizes specs when needed and archives one verified change.
+- Select each next operation manually. These commands do not automatically advance, commit product work, or deploy.
 
 ## Everyday commands
 
@@ -21,15 +33,25 @@ Review the design before planning a change, and review that change before reques
 | `$dev design <goal or source>` | Create or adopt a product design and outcome roadmap. |
 | `$dev plan [outcome or request]` | Prepare one bounded OpenSpec change. |
 | `$dev work [change]` | Implement or resume that change and complete required QA. |
-| `$dev verify [change]` | Review current acceptance and refresh evidence. |
+| `$dev verify [change]` | Assess acceptance and refresh evidence without editing implementation. |
 | `$dev revise <feedback>` | Revise the selected change's planning artifacts. |
 | `$dev revise --effort <id> "<feedback>"` | Revise product design and roadmap. |
 | `$dev finish [change]` | Sync specifications and archive a verified change. |
 | `$dev status` | Inspect state, evidence, blockers, and the exact next command. |
 
-An explicit change name is useful when several changes exist. A sole compatible target or an unambiguous conversation reference can be selected without repeating it. Ambiguous targets require selection.
+- `<value>` is required; `[value]` is optional. Omit the brackets when typing.
+- Name the target when several changes or efforts qualify; an unambiguous existing target can be inferred.
+- Adopt existing work with `$dev design <existing-document-or-checklist>`.
+- For a bounded bug, use `$dev plan "Fix <observed problem>"`; a separate product roadmap is optional.
 
-For a small independent bug, start with `$dev plan "Fix <observed problem>"`. A separate product roadmap is optional for a bounded direct request.
+## Artifacts and governing rules
+
+- Product design and roadmap: normally `docs/development/<effort-id>/`; reuse suitable canonical documents.
+- Change plans, tasks, and `verification.md`: the native OpenSpec change location in the project or selected planning store.
+- Code, tests, and QA output: existing project locations. See the [artifact ownership table](skills/dev/references/architecture.md#project-artifacts-and-ownership).
+- Clean Architecture governs module boundaries and dependencies; decoupling governs reusable components; SOLID governs responsibilities and interfaces within them.
+- Load actual installed Ponytail and OpenSpec skills through the [command routing table](skills/dev/SKILL.md#command-routing). Provider instructions stay with their installed skills.
+- Current acceptance evidence and resolved required findings govern completion. Task checkboxes and archival alone do not prove delivery.
 
 ## Reference guide
 
@@ -41,10 +63,9 @@ For a small independent bug, start with `$dev plan "Fix <observed problem>"`. A 
 | [OpenSpec integration](skills/dev/references/openspec-workflow.md) | Native workflows, change artifacts, schemas, stores, and archive behavior. |
 | [Engineering and verification](skills/dev/references/engineering-and-verification.md) | Clean Architecture, SOLID, Ponytail, testing, telemetry, copied databases, UI QA, and evidence. |
 | [Installation and maintenance](skills/dev/references/maintenance.md) | Setup, validation, updates, rollback, removal, and troubleshooting. |
-| [Implementation plan](docs/implementation-plan.md) | Approved construction decisions and the initial project handoff. |
+| [Implementation plan](docs/implementation-plan.md) | Historical approved construction decisions and initial project handoff. |
 | [Behavioral scenarios](tests/scenarios.md) | Reproducible library evaluations. |
-| [Installation and validation evidence](tests/evidence/2026-10-09-installation-and-adoption.md) | Observed installation, fresh-session checks, project adoption, and acceptance limits. |
-| [Testing-order update](tests/evidence/2026-10-09-flexible-test-order.md) | Version 1.0.1 allows implementation and testing in either order while retaining required QA. |
+| [Evaluation records](tests/evidence/) | Observed results, tested versions, and limitations; older reports remain historical. |
 
 ## Installation model
 
@@ -54,8 +75,7 @@ For a small independent bug, start with `$dev plan "Fix <observed problem>"`. A 
 /Users/po/.agents/skills/dev  (one symbolic link)
 ```
 
-The source repository owns the library. The global link makes the skill discoverable in other projects. Product code, design, OpenSpec changes, and test evidence remain in the selected project or its configured planning store.
-
-Ponytail is loaded for design, planning, revision, work, and verification. It seeks the smallest complete solution while preserving accepted functionality, architecture, testing, telemetry, and accessibility requirements. The library uses the installed Ponytail and OpenSpec skills; it does not vendor their instructions or replace their tools.
-
-Source edits are immediately visible through the global link. Validate updates before using them; see [maintenance](skills/dev/references/maintenance.md). Installation and test results belong in actual evaluation reports, not inferred from this README.
+- The source repository owns the library; one global link exposes it across projects.
+- Validate candidate updates before editing the linked source; changes become globally visible immediately.
+- Reload changed instructions or start a fresh session after updates.
+- Follow [maintenance](skills/dev/references/maintenance.md) for installation, validation, updates, and recovery.

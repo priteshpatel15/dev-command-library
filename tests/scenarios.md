@@ -2,11 +2,14 @@
 
 These evaluations exercise the skill's decisions and resulting artifacts. They are not checks that its instructions contain particular words. Run them in disposable projects; never use the restaurant application's database, secrets, ports, source files, or QA datasets.
 
-The runner prepares fixtures and preserves observations. A fresh evaluator receives only the **Evaluator request**, the candidate skill path, the fixture location, and the stated resource boundary. Keep **Scoring** instructions out of that evaluator's prompt. A separate scorer compares actual tool activity, file changes, test output, and handoffs against the criteria below. Do not give the evaluator an answer key or accept its own success statement as proof.
+- The runner prepares fixtures and preserves observations.
+- A fresh evaluator receives only the **Evaluator request**, candidate skill path, fixture location, and resource boundary. Keep **Scoring** instructions out of its prompt.
+- A separate scorer compares tool activity, file changes, test output, and handoffs with these criteria; the evaluator's success statement is not proof.
+- [Command routing](../skills/dev/SKILL.md#command-routing) owns skill selection. Score actual loading and application of its required skills, including conditional use and explicit user overrides; CLI execution alone does not prove skill use.
 
 ## Run protocol
 
-1. Resolve the candidate `skills/dev/SKILL.md`, the installed Ponytail skill, OpenSpec, Python, and available browser tooling. Record their paths/versions and the candidate's content identity. Do not hardcode a plugin-cache version in the installed skill.
+1. Resolve the candidate `skills/dev/SKILL.md`, the actual installed skills required by its routing, OpenSpec, Python, and applicable browser tooling. Record source paths, available versions, overrides, and content identities. Do not hardcode a plugin-cache version in the installed skill.
 2. Allocate one temporary run directory and a distinct project per scenario. Keep all fixture changes and raw transcripts there. Initialize local Git repositories when needed; never create a remote or change global Git configuration.
 3. Preserve a before/after file listing and digest of the fixture and any protected sibling fixture. Record every evaluator prompt and the actual response/tool transcript. For a read-only case, compare the complete protected project snapshot, not only Git-tracked files.
 4. Use real OpenSpec CLI operations. Give its subprocesses temporary `XDG_CONFIG_HOME` and `XDG_DATA_HOME` locations, so test stores and global configuration remain isolated. Do not repurpose `HOME` or `CODEX_HOME`. Keep the same isolated OpenSpec environment throughout a scenario, including agent calls.
@@ -137,7 +140,13 @@ $dev setup
 
 After setup, the runner adds `# evaluator custom context sentinel` to the generated config and issues `$dev setup` again. Then issue `$dev plan`.
 
-**Scoring:** Design and roadmap contain product outcomes and dependencies without inventing a task controller. Actual Ponytail instructions were loaded for design and plan. The first plan does not initialize OpenSpec implicitly; it returns the setup action. Setup preserves the original project rules and the added custom config. The last plan creates one native OpenSpec change, passes applicable native validation, names the correct artifact locations, and stops without product source/test changes. Any source edit during design/plan fails this case.
+**Scoring:**
+
+- Design and roadmap contain product outcomes/dependencies without a task controller. Design and plan load/apply `ponytail:ponytail`; an unchanged copy already loaded in that evaluator context may be reused.
+- The first plan returns the setup action without initializing OpenSpec implicitly.
+- Setup uses native CLI capabilities and preserves project rules and custom config.
+- The last plan loads/applies `openspec-propose`, creates one native change, validates applicable artifacts, and names their resolved locations.
+- Design/plan stop without product source/test edits; any such edit fails this case. Optional exploration follows the routing condition, not an invented prerequisite.
 
 ## S02 — Standalone defect through implementation, full QA, and finish
 
@@ -162,7 +171,16 @@ $dev finish <returned-change-name>
 
 Authorize required spec sync when the native workflow presents its actual changes; retain the prompt and answer. Also create a separate untouched future roadmap outcome before finish, to detect accidental advancement.
 
-**Scoring:** No unrelated full-product design is required. Require passing regression, CLI, caller, boundary, and telemetry checks covering whitespace behavior and edge cases. Implementation/testing order is flexible; a prior failing test run is not required. The implementation fixes the shared function, preserves existing behavior, and adds no dependency or speculative interface. `work` completes all required CLI QA rather than reporting implementation-only completion. The report records actual skill, code, test and configuration identities plus semantic review. Native spec sync happens before archive; archived evidence references remain resolvable. No commit/push/deploy or future-change creation occurs. A task checkbox or successful process exit alone is not proof.
+**Scoring:**
+
+- No unrelated full-product design is required. Plan applies `openspec-propose`; work applies `openspec-apply-change`. Both use actual `ponytail:ponytail` instructions.
+- The shared function fixes both callers, preserves existing behavior, and adds no dependency or speculative interface.
+- Work completes regression, CLI, caller, boundary, and telemetry checks, including whitespace edge cases. Implementation/testing order is flexible; a prior failing test run is not required.
+- Code acceptance includes actual `ponytail:ponytail-review`, scoped to the change, and required engineering findings/resolutions. A justified current review or explicit override follows the routing/freshness contract.
+- Verification records tested code, requirements, tests, fixtures, configuration, dependencies, actual skill sources/versions, and overrides, including relevant dirty/untracked content.
+- Finish checks current acceptance and applies `openspec-archive-change`. When sync is required, archive owns the synchronous `openspec-sync-specs` invocation; inspect actual capability updates before the move. No duplicate pre-sync or background sync occurs.
+- Archived evidence links remain resolvable. No commit/push/deploy or future-change creation occurs.
+- Task checkboxes, native `all_done`, and process exit codes alone are not acceptance proof.
 
 **Scorer-only examples:** Verify `"  Café\\t au\\n lait  "` produces `"café-au-lait"` when escapes are real whitespace; whitespace-only input produces `""`; `"already-normal"` remains unchanged. Exercise both callers and the CLI, and inspect that telemetry does not contain the title itself.
 
@@ -216,7 +234,12 @@ $dev revise "Preserve punctuation exactly, and document a punctuation scenario."
 
 Supply concrete confirmation only after the proposed artifact revisions are shown if native OpenSpec update requires it.
 
-**Scoring:** Finish detects relevant drift and leaves the change active. Verify runs or identifies invalidated checks, reports the actual defect, and changes no product source or task state. Revision loads Ponytail, updates planning only, identifies affected evidence, and reopens only tasks whose accepted work changed. Product requirements are never silently narrowed to make tests green. A later explicit work request may repair the implementation; the revise request itself may not.
+**Scoring:**
+
+- Finish detects relevant drift and leaves the change active.
+- Verify uses `ponytail:ponytail` and native read-only CLI inspection; refreshes required missing/stale `ponytail:ponytail-review` evidence; and reports actual invalidated checks/defects. It changes no product source, tests, requirements, or task state.
+- Revision applies `ponytail:ponytail` and `openspec-update-change`, updates planning only, identifies stale evidence, and reopens only affected tasks.
+- Accepted requirements are not narrowed to make checks green. A later explicit work request may repair implementation; revision itself may not.
 
 ## S05 — Actual browser-positive workflow
 
@@ -324,7 +347,14 @@ Continue each selected change through work and finish in separate explicit reque
 
 ## S08 — Ponytail discovery, honest missing-dependency handling, and resume
 
-**Positive:** Run design, plan, revise, work, and verify in fresh evaluators against their appropriate fixtures. Retain tool evidence that the actual installed Ponytail skill was resolved/read. Reusing its unchanged content within one evaluator session is allowed. Inspect actual planning/diffs: preserve accepted scope, reuse existing capabilities, avoid needless dependencies/wrappers, and keep architecture/testing/telemetry/QA obligations. Delegates receive the same contract. A report merely asserting "Ponytail used" is insufficient.
+**Positive:**
+
+- Run design, plan, revise, work, and verify in fresh evaluators against their appropriate fixtures. Retain evidence of actual `ponytail:ponytail` loading/application; unchanged instructions already available in one evaluator context may be reused.
+- Inspect the planning/diff and required code-review evidence against the installed skill and library engineering contract. A report merely asserting "Ponytail used" is insufficient.
+- For code-change acceptance, retain actual `ponytail:ponytail-review` loading/application and reviewed scope identity. Verify may reuse a review only with unchanged relevant code, requirements, dependencies, and review instructions; missing/stale required reviews must be refreshed.
+- Exercise explicit Ponytail mode/disable overrides in separate fixture copies. Record the exact user override; honor it while preserving accepted scope and engineering obligations. Disabling a skill is not a missing-dependency failure.
+- Delegates receive actual applicable skill instructions or load them themselves, along with scoped ownership and governing requirements.
+- Inspect OpenSpec skill use in the scenarios that exercise it. Setup/status/verify do not invent skills; effort-level revision does not implicitly invoke change revision; finish consumes current review evidence and archive owns any required sync.
 
 **Missing-dependency variant:** Use an evaluator environment whose real available skill inventory and filesystem access exclude Ponytail, while leaving `$dev` and OpenSpec available. Request a judgment command and then status. Do not delete, rename, or hide the user's real plugin. Do not instruct an agent with an accessible Ponytail installation to pretend it is missing. If the harness cannot provide this isolation, record this variant `BLOCKED: unavailable isolated skill catalog` and retain the honest positive discovery evidence.
 
@@ -341,6 +371,12 @@ First require the native list result to show the intended installed plugin with 
 
 ## Score report contents
 
-For every case, record: scenario ID, exact prompt, fixture and candidate identities, evaluator/scorer distinction, tool/test evidence paths, observed artifacts and diffs, outcome, and limitation. Distinguish metadata validation, native CLI validation, agent behavior, CLI acceptance, actual browser acceptance, and negative DB protection. They are different claims.
+For every case, record:
+
+- Scenario/variant ID, exact prompt, fixture/candidate identities, and evaluator/scorer distinction.
+- Actual skill sources/versions, loading or justified reuse, explicit overrides, and tool/test evidence paths.
+- Observed artifacts/diffs, outcome, unexecuted variants, and limitations.
+
+Distinguish metadata validation, native CLI validation, agent behavior, CLI acceptance, actual browser acceptance, and negative DB protection. They are different claims.
 
 Do not claim a complete installation evaluation while any required positive behavior is unexecuted. Record unavailable negative isolation explicitly. Do not manufacture missing receipts, mark planned checks passed, or infer end-to-end success from a syntactically valid skill.
