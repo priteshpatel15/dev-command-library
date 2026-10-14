@@ -369,6 +369,43 @@ First require the native list result to show the intended installed plugin with 
 
 **Scoring:** A genuinely missing required skill is reported as a dependency, never replaced by a remembered slogan or secretly installed. Read-only status remains usable and makes no changes. Explicit user mode overrides are honored without weakening accepted engineering obligations. In a new work session, the agent reloads actual inputs, reconciles the retained test state, and resumes the remaining accepted scope rather than restarting valid work or advancing to another change.
 
+## S09 — Size budget, change map, single review, and two-tier gates
+
+These cases exercise the speed rules added in 1.1.0. Reuse the CLI fixture; the UI variant reuses the S05 fixture.
+
+**Oversized outcome fixture:** A roadmap whose single outcome lists 14 tasks' worth of scope across three modules (domain, a CLI, and a preview web page) and 18 scenario IDs.
+
+**Evaluator requests, separately:**
+
+```text
+$dev plan <effort>/<outcome>
+```
+
+```text
+$dev work <returned-change-name>
+```
+
+```text
+$dev finish <returned-change-name>
+```
+
+```text
+$dev qualify <effort>/<outcome>
+```
+
+**Oversized change variant:** In a copy, hand-author a change whose `tasks.md` has 12 tasks spanning all three modules, then request `$dev work <change>`.
+
+**Scoring:**
+
+- Plan records a numbered slice list on the roadmap outcome row and creates exactly one native change for the first slice; that change has at most 8 tasks and names its change gate. No outcome-gate task appears in the slice.
+- Work writes the change map into `verification.md` (touch/reuse/add/skip/change gate) before the first product source edit; the transcript order proves it.
+- Work runs focused checks and only the touched browser specs; it never runs the fixture's full matrix more than once and never polls a background run.
+- Exactly one `ponytail:ponytail-review` pass occurs after the change gate passes; at most one fix round follows. No reviewer agent is forked with the whole conversation; no `ponytail-audit/debt/gain/help` is loaded.
+- `verification.md` records HEAD, diff hash, and untracked hash, a checks table, and the review's diff hash. It contains no per-file hash manifest.
+- Finish archives on the passing change gate without running the outcome gate. It reports `$dev qualify` only when the outcome's last slice is finished; otherwise it reports the next slice's plan.
+- Qualify refuses while a slice remains; after all slices are finished it runs the outcome gate once, writes `docs/development/<effort>/qualification/<outcome>.md`, links it from the roadmap, and routes any failure to `$dev plan "<defect>"` without editing code.
+- The oversized-change variant stops before any code edit and reports a `$dev revise … split` command.
+
 ## Score report contents
 
 For every case, record:

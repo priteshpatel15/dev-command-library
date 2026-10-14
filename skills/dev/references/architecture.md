@@ -11,15 +11,16 @@
 | Component | Responsibility |
 | --- | --- |
 | User | Select goals, outcomes, changes, and subsequent commands; resolve material decisions. |
-| Codex | Execute the selected instructions, inspect artifacts, use project tools, and report observed results. |
+| Agent (Codex or Claude Code) | Execute the selected instructions, inspect artifacts, use project tools, and report observed results. |
 | `$dev` package | Resolve the project/target, route commands, load relevant instructions, and preserve operation boundaries. |
 | Product-planning reference | Guide product design, outcome roadmaps, adoption, and effort revision. |
 | Installed OpenSpec skills and CLI | Own native schemas, metadata, artifact instructions, change lifecycle, and planning-store resolution. |
-| Installed Ponytail skills | Supply actual development/review instructions according to command routing. |
-| Project tooling | Build, test, run required UI/copied-database QA, and produce evidence. |
-| Verification record | Retain tested identities, coverage, results, findings, and acceptance gaps for later assessment. |
+| Installed Ponytail skills | Shape the change map and implementation before code; one review at the end, according to command routing. |
+| Project tooling | Build, test, run the change gate (fast path) and the outcome gate (full harness), and produce evidence. |
+| Verification record | Retain tested identity, change map, change-gate results, review, and gaps for one change. |
+| Qualification record | Retain one outcome-gate run per roadmap outcome and its routed defects. |
 
-- `$dev` is a Codex instruction package; it has no application runtime, daemon, scheduler, or task database.
+- `$dev` is an instruction package; it has no application runtime, daemon, scheduler, or task database.
 - Each invocation resolves the current repository and explicit/unambiguous target; there is no global active-project pointer.
 - State comes from current artifacts and evidence; recency and checkboxes alone do not establish completion.
 
@@ -29,7 +30,8 @@ Current installation:
 
 ```text
 Source: /Users/po/codeandconfigs/dev-command-library
-Link:   /Users/po/.agents/skills/dev
+Links:  /Users/po/.agents/skills/dev   (Codex)
+        /Users/po/.claude/skills/dev   (Claude Code)
         -> /Users/po/codeandconfigs/dev-command-library/skills/dev
 
 dev-command-library/
@@ -49,7 +51,8 @@ dev-command-library/
 │   └── assets/templates/
 │       ├── design.md
 │       ├── roadmap.md
-│       └── verification.md
+│       ├── verification.md
+│       └── outcome-verification.md
 └── tests/
     ├── scenarios.md
     └── evidence/<run-id>.md
@@ -69,7 +72,8 @@ Package paths below are relative to `skills/dev/`.
 | [references/maintenance.md](maintenance.md) | Installation, updates, validation, recovery, and removal; library maintenance. |
 | [assets/templates/design.md](../assets/templates/design.md) | Starting structure when no suitable canonical product design exists. |
 | [assets/templates/roadmap.md](../assets/templates/roadmap.md) | Outcome IDs, dependencies, acceptance boundaries, and change links when creating a roadmap. |
-| [assets/templates/verification.md](../assets/templates/verification.md) | Tested identities, coverage, results, findings, and gaps when creating change evidence. |
+| [assets/templates/verification.md](../assets/templates/verification.md) | Tested identity, change map, change-gate checks, review, and gaps for one change. |
+| [assets/templates/outcome-verification.md](../assets/templates/outcome-verification.md) | One outcome-gate run and routed defects, written by `qualify`. |
 
 - Repository-level `README.md` provides navigation; `.gitignore` excludes temporary evaluation/cache output.
 - `docs/implementation-plan.md` retains the original build design and acceptance scope.
@@ -96,15 +100,16 @@ Package paths below are relative to `skills/dev/`.
 | Delta specifications | Required behavior and scenarios for the change | `<change>/specs/<capability>/spec.md` | `plan`, `revise` | Implementation, acceptance, synchronization |
 | Technical design | Selected solution, contracts, reuse, dependencies, and migrations | `<change>/design.md`, when applicable | `plan`, `revise` | Implementation and review |
 | Tasks | Work and verification obligations with implementation progress | `<change>/tasks.md` | `plan`, `revise`; progress from `work` | Work/resume and completion assessment |
-| Verification record | Actual coverage, tested identity, findings, and gaps | `<change>/verification.md` | `work`, `verify`; invalidation from `revise` | `status`, `finish` |
+| Verification record | Change map, tested identity, change-gate results, review, and gaps | `<change>/verification.md` | `work`, `verify`; invalidation from `revise` | `status`, `finish` |
+| Qualification record | One outcome-gate run, receipts, and routed defects | `<project>/docs/development/<effort-id>/qualification/<outcome-id>.md` | `qualify` | `status`, roadmap delivery review |
 | Main specifications | Accumulated capability behavior | `<planning-home>/openspec/specs/<capability>/spec.md` | Synchronization during `finish` | Later planning and development |
 | Code, tests, config, migrations | Implemented solution | Existing locations in `<project>` | `work` | Runtime, tests, review |
 | QA output | Logs, reports, screenshots, and traces | Existing harness-owned locations | Project tooling during `work`/`verify` | Debugging and verification |
 | Archived change | Complete closed change with metadata and evidence | Native resolved archive directory | `finish` | History, status, later planning |
 
 - Product design defines the experience and outcomes; technical design defines the selected change's solution.
-- Roadmap owns delivery intent, native tasks own implementation progress, and verification owns acceptance evidence.
-- One outcome may span several changes; completing one change qualifies only its accepted scope.
+- Roadmap owns delivery intent and slices, native tasks own implementation progress, verification owns change-gate evidence, and qualification owns outcome-gate evidence.
+- One outcome normally spans several slices; finishing a slice never qualifies the outcome.
 - `verification.md` is a library convention; OpenSpec does not automatically validate its claims.
 - Evidence references declare repository/path bases and remain resolvable after archive.
 - Native OpenSpec owns all generated metadata, including files such as `.openspec-target` when present.
@@ -114,14 +119,15 @@ Package paths below are relative to `skills/dev/`.
 - The diagram shows a typical manually selected sequence; each user request authorizes its operation only.
 - `setup` prepares integration when needed; `status` inspects without writes at any stage.
 - A bounded standalone fix can start at `plan`; an existing effort reuses suitable design and roadmap artifacts.
-- `work` includes required QA, review, and corrective iteration. Separate `verify` is optional when acceptance evidence is already current.
-- `verify` refreshes evidence without editing implementation/tests/accepted behavior; authorized isolated QA data mutations follow the command contract.
-- `finish` proceeds only with current passing acceptance and resolved required findings. Required spec sync must complete and be verified before archive.
+- `work` writes the change map, implements, runs the change gate, and reviews once. Separate `verify` is optional when evidence is already current.
+- `verify` refreshes change-gate evidence without editing implementation/tests/accepted behavior; authorized isolated QA data mutations follow the command contract.
+- `finish` proceeds only with a current passing change gate and recorded review. Required spec sync must complete and be verified before archive.
+- `qualify` runs the outcome gate once after an outcome's last slice is finished; its defects become new small changes.
 
 ```mermaid
 sequenceDiagram
     actor User
-    participant Dev as Codex with dev
+    participant Dev as Agent with dev
     participant Spec as OpenSpec
     participant Tools as Project tools
     participant Files as Project or store artifacts
@@ -134,13 +140,13 @@ sequenceDiagram
     Dev->>Files: Planning artifacts
     Dev-->>User: Reviewable change
     User->>Dev: work selected change
-    Dev->>Files: Implement and test accepted scope
-    Dev->>Tools: Required checks and applicable UI / copied-DB QA
-    Dev->>Files: Task progress, review findings, verification evidence
-    Dev-->>User: Current acceptance or concrete blocker
+    Dev->>Files: Change map, then implement accepted scope
+    Dev->>Tools: Change gate: focused checks and touched specs
+    Dev->>Files: Task progress, one review, verification evidence
+    Dev-->>User: Change-gate result or concrete blocker
     opt User requests separate verification
         User->>Dev: verify selected change
-        Dev->>Tools: Missing or invalidated applicable checks
+        Dev->>Tools: Invalidated change-gate checks only
         Dev->>Files: Updated verification evidence
         Dev-->>User: Acceptance result and gaps
     end
@@ -158,17 +164,24 @@ sequenceDiagram
     else Acceptance missing, stale, or failed
         Dev-->>User: Report required work or verification
     end
+    opt Outcome's last slice finished
+        User->>Dev: qualify selected outcome
+        Dev->>Tools: Outcome gate once: full harness, copied-DB, browser matrix
+        Dev->>Files: Qualification record and roadmap evidence link
+        Dev-->>User: Qualified, or defects routed to new small changes
+    end
 ```
 
 - Every operation loads the actual skills/references selected by [command routing](../SKILL.md#command-routing), including Ponytail where required.
 - Material scope/behavior changes route to a selected `revise`; effort revision reports affected changes without editing them implicitly.
-- Native task completion, `all_done`, or archival alone does not establish verified delivery.
+- Native task completion, `all_done`, or archival alone does not establish verified delivery; qualification establishes outcome delivery.
 - Finish reports the next command; it does not launch another outcome or an execution loop.
 
 ## Governing principles
 
 - Apply the [engineering hierarchy](engineering-and-verification.md#architecture-decoupling-and-solid): Clean Architecture for modules/dependencies, decoupled components within modules, and SOLID responsibilities/contracts within components.
-- Load and apply actual Ponytail through routing; keep its rules in the installed skills.
+- Load and apply actual Ponytail through routing; keep its rules in the installed skills. Ponytail shapes the change map before code; review is one pass at the end.
+- Keep changes inside the size budget and sessions short; the biggest delays come from oversized changes, repeated full harness runs, and long-lived threads.
 - Use applicable project and nested instructions for concrete boundaries, commands, and QA requirements.
 - The references provide instruction-based obligations. Project checks, tests, CI, and recorded review supply supporting evidence.
 - Mechanical checks assess enforceable properties; human or independent agent review assesses architectural meaning and unresolved findings.

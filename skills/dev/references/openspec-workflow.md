@@ -41,22 +41,24 @@
 
 ## Plan
 
-- Apply `openspec-propose` for one selected outcome or bounded request.
+- Apply `openspec-propose` for one selected outcome slice or bounded request within the [size budget](commands.md#size-budget).
+- If the outcome exceeds the budget, record its slices in the roadmap first; create one native change per slice, starting with the first unplanned slice.
 - Create new metadata with `openspec new change <name>`; never hand-author `.openspec.yaml`.
 - Resume an existing selected draft through native instructions instead of creating a duplicate.
 - Read native context/rules and inspect relevant source, tests, and configuration before drafting.
 - Follow the native artifact dependency order; reread completed dependency files from disk.
 - Use native templates and artifact rules; do not add unused stock files to custom schemas.
 - Link the product/outcome and target repository in an appropriate native artifact.
+- Name the change gate in tasks; keep outcome-gate obligations out of slice tasks.
 - Validate using current native help; review consistency among requirements, technical approach, and tasks.
 - Present exact artifact paths and stop for review; start work only on an explicit request.
 
 ## Work
 
 - Apply `openspec-apply-change`; read current apply instructions and their context files.
-- Inspect partial implementation and retained evidence before resuming.
+- Inspect partial implementation and retained evidence before resuming; a retained change map is the resume point.
 - If required planning artifacts are missing, report them and direct to plan.
-- Complete the selected tasks, required QA, review, and corrective iteration under the engineering reference.
+- Follow the ordered [work sequence](commands.md#work): size check, change map in `verification.md`, implementation, change gate, one review, evidence.
 - Check off an obligation only when its actual criterion is met; retain detailed proof in verification rather than a second task list.
 - Native `all_done` triggers evidence assessment; it does not establish acceptance.
 - Keep ordinary defects within work; revise material scope/behavior changes before dependent implementation.
@@ -80,7 +82,7 @@
 
 ## Finish
 
-- Require current passing acceptance and resolved required engineering findings before synchronization/archive; native permission to archive unfinished work does not satisfy this gate.
+- Require a current passing change gate and recorded review before synchronization/archive; native permission to archive unfinished work does not satisfy this gate. The outcome gate belongs to `qualify`, not finish.
 - Route defects to work and missing/stale evidence to verify.
 - Apply `openspec-archive-change`; it owns the inline `openspec-sync-specs` invocation when sync is needed.
 - Follow native lookup rules: archive guidance is optional; required specs instructions must succeed before main-spec writes.
@@ -89,4 +91,4 @@
 - If required sync is declined, blocked, or fails, leave the change active and report unfinished status.
 - Use native resolved archive paths/naming; do not double date prefixes or overwrite an existing archive.
 - Move the complete directory, including `.openspec.yaml` and `verification.md`; update owned roadmap links and check evidence references resolve.
-- Report one closed change, archive path, proof, and next command; do not start another outcome automatically.
+- Report one closed change, archive path, proof, and next command; after an outcome's last slice, the next command is `qualify`. Do not start another outcome automatically.

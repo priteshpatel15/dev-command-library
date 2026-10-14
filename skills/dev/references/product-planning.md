@@ -34,13 +34,14 @@
 
 ## Outcome roadmap
 
-- Give each outcome a stable ID, observable result, dependencies, acceptance boundary, and links to its OpenSpec changes.
+- Give each outcome a stable ID, observable result, dependencies, outcome gate, slices, and links to its OpenSpec changes.
 - Prefer complete user outcomes over separate frontend/backend phases.
-- Allow several bounded changes for a large outcome; detail only the next selected change through `$dev plan`.
+- Name the outcome gate: the project command or scenario set that proves the whole outcome once through `$dev qualify`.
+- Expect a large outcome to need several slices, each one change within the [size budget](commands.md#size-budget); `plan` records the slice list and details one slice at a time. Each slice is a vertical step (one owner contract end to end), not a layer.
 - Mark an outcome ready only when prerequisites are satisfied and material decisions are resolved.
 - When several outcomes qualify, use an explicit or unambiguous conversation selection; otherwise ask.
 - Keep delivery intent in the roadmap, implementation tasks in OpenSpec, and acceptance proof in verification records.
-- Link verified delivery evidence; claim an outcome complete only when its full acceptance boundary is covered.
+- Link the qualification record; claim an outcome complete only when its outcome gate passed.
 - Do not duplicate task checklists or invent independent completion percentages.
 
 ## Outputs
@@ -73,7 +74,7 @@
 ## Handoff to plan
 
 - Present exact artifact paths, unresolved material decisions, and one next command; stop for review without implementing.
-- After review, recommend `$dev plan <effort-id>/<outcome-id>` for one selected outcome; run plan only when requested.
+- After review, recommend `$dev plan <effort-id>/<outcome-id>` for one selected outcome; plan slices it if needed. Run plan only when requested.
 - Let plan read the source documents directly and link the effort/outcome and target repository in the native change; do not create a prompt packet.
 - If OpenSpec is absent, direct to `$dev setup` before plan; do not initialize it implicitly.
 - Allow a clear, bounded standalone fix to enter plan without creating a product design or roadmap.

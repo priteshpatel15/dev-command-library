@@ -22,8 +22,11 @@ Current locations:
 ```text
 source repository: /Users/po/codeandconfigs/dev-command-library
 skill package:     /Users/po/codeandconfigs/dev-command-library/skills/dev
-global link:       /Users/po/.agents/skills/dev
+global links:      /Users/po/.agents/skills/dev   (Codex)
+                   /Users/po/.claude/skills/dev   (Claude Code)
 ```
+
+Claude Code also needs the Ponytail plugin (`/plugin marketplace add DietrichGebert/ponytail`, then `/plugin install ponytail@ponytail`) and, per project, links from `.claude/skills/` to the project's `.agents/skills/openspec-*` directories.
 
 - Validate the candidate using the applicable checks below before exposing it through the global link.
 - Inspect the destination, including dangling links; preserve unexpected files, directories, or links.

@@ -1,28 +1,37 @@
 # Development command library
 
-One global Codex skill for product design, outcome roadmaps, and delivery through one OpenSpec change at a time.
+One global skill (Codex and Claude Code) for product design, outcome roadmaps, and delivery through one small OpenSpec change at a time.
 
 ## Start here
 
-- Open the target project in Codex.
-- Enter commands in **Codex chat**, not a terminal.
+- Open the target project in Codex or Claude Code.
+- Enter commands in **chat**, not a terminal (`$dev …` in Codex, `/dev …` in Claude Code).
 - Use `$dev status` to resume an existing effort.
 - For a new effort, run the commands below individually. Replace placeholders with your goal, outcome, and change name.
 
 ```text
 $dev setup
 $dev design "Describe the product or improvement"
-$dev plan <outcome-id>
-$dev work <change-name>
-$dev finish <change-name>
+$dev plan <outcome-id>            # slices a large outcome; plans the first slice
+$dev work <change-name>           # one slice: change map → code → change gate → one review
+$dev finish <change-name>         # repeat plan/work/finish per slice
+$dev qualify <effort>/<outcome>   # full outcome gate, once, after the last slice
 ```
 
 - Use `setup` when project integration is missing or needs repair.
 - Review the design/roadmap before `plan`; review the change before `work`.
-- `work` includes implementation, required tests, applicable UI/copied-database QA, review, and fixes.
+- `work` writes a Ponytail change map before any code, implements the smallest complete change, runs the change gate (focused checks plus the browser specs it touches), and reviews once.
+- `qualify` runs the project's full harness (copied database, whole browser/accessibility matrix) once per outcome; its defects become new small changes.
 - `verify` is available for a separate evidence review; it is optional when acceptance is already current.
 - `finish` synchronizes specs when needed and archives one verified change.
 - Select each next operation manually. These commands do not automatically advance, commit product work, or deploy.
+
+## Keep it fast
+
+- Keep every change inside the size budget (≤ 8 tasks, ≤ 2 owning modules/apps, ≤ 10 scenario IDs, one session). Oversized changes are the main cause of multi-hour runs.
+- Start each `work` in a fresh session; long threads compact repeatedly and re-read everything.
+- Reasoning effort: high/xhigh for design and plan; medium/high for work, verify, qualify, finish. `max`/`ultra` roughly triples wall time.
+- Iterate on the single failing check against a running stack; run the full harness once, in the foreground, reporting all failures.
 
 ## Everyday commands
 
@@ -31,11 +40,12 @@ $dev finish <change-name>
 | `$dev` | See the command card and current state. |
 | `$dev setup` | Configure an existing or new project for this workflow. |
 | `$dev design <goal or source>` | Create or adopt a product design and outcome roadmap. |
-| `$dev plan [outcome or request]` | Prepare one bounded OpenSpec change. |
-| `$dev work [change]` | Implement or resume that change and complete required QA. |
-| `$dev verify [change]` | Assess acceptance and refresh evidence without editing implementation. |
+| `$dev plan [outcome or request]` | Prepare one small OpenSpec change (slicing a large outcome). |
+| `$dev work [change]` | Implement or resume that change through its change gate and one review. |
+| `$dev verify [change]` | Assess change-gate acceptance and refresh evidence without editing implementation. |
 | `$dev revise <feedback>` | Revise the selected change's planning artifacts. |
 | `$dev revise --effort <id> "<feedback>"` | Revise product design and roadmap. |
+| `$dev qualify <effort>/<outcome>` | Run the outcome gate once for a finished outcome. |
 | `$dev finish [change]` | Sync specifications and archive a verified change. |
 | `$dev status` | Inspect state, evidence, blockers, and the exact next command. |
 
@@ -48,6 +58,7 @@ $dev finish <change-name>
 
 - Product design and roadmap: normally `docs/development/<effort-id>/`; reuse suitable canonical documents.
 - Change plans, tasks, and `verification.md`: the native OpenSpec change location in the project or selected planning store.
+- Outcome qualification records: `docs/development/<effort-id>/qualification/<outcome-id>.md`.
 - Code, tests, and QA output: existing project locations. See the [artifact ownership table](skills/dev/references/architecture.md#project-artifacts-and-ownership).
 - Clean Architecture governs module boundaries and dependencies; decoupling governs reusable components; SOLID governs responsibilities and interfaces within them.
 - Load actual installed Ponytail and OpenSpec skills through the [command routing table](skills/dev/SKILL.md#command-routing). Provider instructions stay with their installed skills.
@@ -71,11 +82,12 @@ $dev finish <change-name>
 
 ```text
 /Users/po/codeandconfigs/dev-command-library/skills/dev
-                           ↑
-/Users/po/.agents/skills/dev  (one symbolic link)
+                           ↑                ↑
+/Users/po/.agents/skills/dev       /Users/po/.claude/skills/dev
+        (Codex)                         (Claude Code)
 ```
 
-- The source repository owns the library; one global link exposes it across projects.
+- The source repository owns the library; one global link per agent exposes it across projects. Claude Code also needs the Ponytail plugin and per-project links to the OpenSpec skills (see [maintenance](skills/dev/references/maintenance.md#first-installation)).
 - Validate candidate updates before editing the linked source; changes become globally visible immediately.
 - Reload changed instructions or start a fresh session after updates.
 - Follow [maintenance](skills/dev/references/maintenance.md) for installation, validation, updates, and recovery.

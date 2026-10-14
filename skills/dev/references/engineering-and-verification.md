@@ -51,39 +51,54 @@ Apply this hierarchy intentionally: **Clean Architecture → decoupled component
 | Stage | Required action |
 | --- | --- |
 | Design / plan | State affected responsibilities, boundaries, dependency direction, and reuse decisions in the existing design or proposal. |
-| Work | Implement consistently with those decisions; revise material scope/behavior changes before dependent implementation. |
+| Work | Write the change map, implement consistently with it, and revise material scope/behavior changes before dependent implementation. |
 | Verify | Inspect actual imports, call paths, responsibilities, and contracts against all three levels; record findings and resolutions. |
 
 ## Ponytail integration
 
-- Use the exact Ponytail skills selected by [command routing](../SKILL.md#command-routing) through the shared [loading rules](../SKILL.md#load-dependencies).
+Ponytail saves time by shaping the code before it is written, not by reviewing it afterwards.
+
+- Load `ponytail:ponytail` (full unless overridden) through [command routing](../SKILL.md#command-routing) and the shared [loading rules](../SKILL.md#load-dependencies).
 - Apply this file's architecture and acceptance requirements alongside the skill; honor explicit user overrides.
-- Load actual installed companion skills only when needed, using the same discovery and context-reuse rules.
 
-| Installed skill | Use it when |
-| --- | --- |
-| `ponytail:ponytail-review` | Reviewing a completed code change during work or verify; provide the selected diff/files and relevant requirements explicitly. |
-| `ponytail:ponytail-audit` | A broader assessment is requested or needed to understand the selected work; keep the assessment within that scope. |
-| `ponytail:ponytail-debt` | Examining deliberate shortcuts relevant to the work, or when requested; persist a ledger only when requested. |
-| `ponytail:ponytail-gain` / `ponytail:ponytail-help` | Requested information; these are not acceptance gates. |
+### Change map (required before the first code edit)
 
-- Require a current Ponytail review for code-change acceptance unless explicitly overridden by the user.
-- Reuse a prior Ponytail review only when relevant code, requirements, dependencies, and review instructions remain unchanged.
-- Record actual skill sources, available versions, and overrides once per verification record; update them when the instructions used change.
+Write Ponytail's "Before you write" step into `verification.md` as a list of at most ~20 lines:
+
+- Files to touch, and the callers, tests, fixtures, configuration, exports, and contracts the change must reach.
+- Existing components/helpers/patterns reused, by path.
+- Necessary additions, each with the boundary it protects.
+- What is deliberately skipped (features, options, abstractions nobody asked for).
+- Change-gate checks: the focused commands and the browser specs this change touches.
+
+Implement only what the map lists; if implementation discovers the map was wrong, update it before continuing.
+
+### Review (once, at the end)
+
+- After the change gate passes, load `ponytail:ponytail-review` and review the diff against the change map and design.
+- Resolve required findings, rerun affected focused checks, and record the review with the diff hash it covered. At most one fix-and-recheck round; further findings route to a new small change.
+- A review is current while the recorded diff hash matches the current diff. Evidence, documentation, and task-checkbox edits do not invalidate it.
+- Use an independent reviewer only when project instructions require it for the boundaries this change touches (for example shared contracts, security, data contracts). Brief it with the diff, change map, and relevant requirements; do not fork the conversation; accept one pass.
+- `ponytail-audit`, `ponytail-debt`, `ponytail-gain`, and `ponytail-help` are user-invoked only; they are never acceptance gates.
+- Record skill names and versions once per `verification.md`.
 
 ## Implementation and testing
 
 - Choose implementation/testing order to fit the change; a prior failing test run is not required.
-- Complete meaningful regression/contract coverage and applicable unit, integration, and end-to-end acceptance.
+- Complete meaningful regression/contract coverage and the change gate; the outcome gate runs once through `qualify`.
 - Test observable behavior and invariants; avoid tests that duplicate implementation.
 - Cover relevant errors, validation, permissions, empty states, concurrency, retries, idempotency, and boundaries.
 - Diagnose observed regressions and complete missing coverage; record only checks actually performed.
 - For documentation-only changes, validate documents/schemas/affected behavior without claiming application acceptance.
 - Use existing project test tools when sufficient.
-- Run focused checks during iteration; complete required integration acceptance before verified status.
-- Broaden regression checks for changed shared contracts/dependencies.
-- Reuse still-valid results with an explicit reason; rerun affected checks after changes.
-- Investigate repeated identical failures before retrying broad suites.
+
+### Inner and outer loop
+
+- Inner loop: run the smallest check that can fail (one test file, one spec, one scenario title) against an already running stack or reused fixture. Fix, rerun that check only.
+- After two identical failures, stop and diagnose (logs, traces, a reproduction) before running anything again.
+- Outer loop: run the change gate once in the foreground with a timeout after the inner loop is green. Configure it to report all failures.
+- Never rerun a full harness to retest one scenario, and never run a check in the background and poll it.
+- Broaden regression checks only for changed shared contracts/dependencies.
 
 ## Telemetry
 
@@ -95,23 +110,31 @@ Apply this hierarchy intentionally: **Clean Architecture → decoupled component
 - Exclude secrets, tokens, and unrestricted customer records from logs and reports.
 - Avoid duplicate events and noise from trivial helpers; keep workflows and failures diagnosable.
 
-## UI and database acceptance
+## Acceptance tiers
+
+| Tier | When | Proves | Owner |
+| --- | --- | --- | --- |
+| Change gate | Every `work`; refreshed by `verify`; required by `finish` | The change's own units/contracts, boundary checks, and the browser specs it touches, run against a running stack when it has UI | Change `verification.md` |
+| Outcome gate | Once per roadmap outcome through `qualify`, after its last slice finishes | The whole outcome: integrated harness, copied-database provenance and preservation, full browser device/accessibility matrix | Outcome qualification record |
+
+- `AGENTS.md` names both gates' commands and the fast path for a single spec against a reused stack.
+- A slice's change gate never includes the full outcome matrix; a qualification never substitutes for a missing change gate.
+- Defects found by the outcome gate become new small changes.
 
 ### UI
 
-- Cover all designed functionality, states, and end-to-end workflows with applicable Playwright checks.
-- Inspect real rendered behavior, responsive states, keyboard/accessibility, and failure/recovery experience.
+- Cover the designed functionality and states of the change with Playwright checks at the change gate; cover every designed workflow, device, and accessibility state at the outcome gate.
+- Inspect real rendered behavior, keyboard/accessibility, and failure/recovery experience for what the change touches.
 - Use screenshots as supporting evidence, not workflow proof alone.
-- Use mocks/component checks for development; complete required acceptance against the real stack.
+- Use mocks/component checks for development; complete the change gate against the real stack.
 
 ### Database
 
 - Use a real testing copy for database-backed acceptance.
-- Before mutation-capable QA, verify copy provenance and actual connection identity for every participating app/admin/migration/test/worker process.
-- Use the established guard and runtime identity query, such as PostgreSQL `select current_database()`.
+- Before mutation-capable QA, verify copy provenance and actual connection identity for every participating process using the project's established guard and runtime identity query, such as PostgreSQL `select current_database()`.
 - Do not infer connection identity from names or environment variables alone.
 - If the copy is unavailable, report the blocker; never fall back to source/production databases.
-- Independently assert required effects, tenant isolation, and data preservation.
+- Assert required effects, tenant isolation, and data preservation at the outcome gate; at the change gate, assert the effects the change makes.
 - Keep credentials and sensitive records out of evidence.
 
 ### Applicability
@@ -121,11 +144,9 @@ Apply this hierarchy intentionally: **Clean Architecture → decoupled component
 
 ## Engineering review
 
-- Inspect the actual diff and affected call paths after implementation.
-- Use the Ponytail review integration above for code changes.
-- Check Clean Architecture, decoupling, SOLID, validation/error handling, telemetry, accessibility, and acceptance coverage.
-- Use an independent reviewer for material architecture, shared-boundary, security, or data-contract changes.
-- Record the actual reviewer/method, reviewed scope, findings, and resolutions.
+- Inspect the actual diff and affected call paths after implementation, in the single review pass above.
+- Check Clean Architecture, decoupling, SOLID, validation/error handling, telemetry, accessibility, and change-gate coverage.
+- Record the reviewer/method, reviewed diff hash, findings, and resolutions.
 - Distinguish introduced violations, affected existing defects, and unrelated debt.
 - Resolve required findings within scope; avoid unrelated legacy rewrites.
 - Do not use passing functional tests to excuse unresolved required engineering findings.
@@ -133,26 +154,31 @@ Apply this hierarchy intentionally: **Clean Architecture → decoupled component
 
 ## Evidence and freshness
 
-Use the [verification template](../assets/templates/verification.md) for one change-local `verification.md`.
+Use the [verification template](../assets/templates/verification.md) for one change-local `verification.md`, and the [outcome verification template](../assets/templates/outcome-verification.md) for `qualify`.
+
+### Tested identity
+
+Record exactly these, once per evidence update:
+
+```sh
+git rev-parse HEAD
+git diff HEAD | shasum
+git ls-files --others --exclude-standard | sort | shasum
+```
+
+- Together they identify the tested tree. Do not hash individual inputs, build input manifests, or write reuse-rationale files.
+- Evidence is current while all three match; otherwise rerun the change gate and, if the diff hash changed, the review.
+- Record the change gate and outcome gate commands exactly as run, with timestamp, exit code, and the harness-owned receipt path.
 
 ### Record
 
-- Change identity, target repository/worktree, and explicit path bases.
-- Governing instructions and actual skills used, including available versions and overrides.
-- Tested commit plus relevant dirty/untracked content identities; commit identity alone is insufficient.
-- Relevant test, fixture, configuration, dependency, and accepted-requirement identities.
-- Requirement/scenario coverage, exact commands, environments, timestamps, results/exit codes, and evidence paths.
-- Review findings/resolutions and applicable UI/database/telemetry observations.
-- Failed, skipped, missing, or stale checks; unresolved defects; completion eligibility.
-
-### Assess freshness
-
-- Map relevant source, tests, fixtures, configuration, dependencies, and requirements to their checks.
-- If relevant inputs change, invalidate affected evidence and rerun appropriate checks.
-- If relevance cannot be established, treat the evidence as stale.
-- Record why unchanged prior evidence remains valid.
+- Change identity, target repository/worktree, path bases, and governing instructions.
+- Skill names and versions used, with explicit overrides.
+- The change map.
+- One checks table: check, command, result, receipt.
+- Review: method, diff hash, findings, resolutions.
+- Failed, skipped, missing, or stale checks; unresolved defects; finish eligibility.
 - Never turn a planned check, fixture, task checkbox, or native `all_done` into a passing result.
-- Use existing harness identities or content hashes; keep verification an evidence record rather than another task database.
 
 ### Store evidence
 
@@ -164,7 +190,6 @@ Use the [verification template](../assets/templates/verification.md) for one cha
 ### Complete the change
 
 - Work and verify update evidence; revise invalidates affected evidence.
-- Finish checks freshness before specification synchronization/archive and preserves the evidence.
+- Finish checks identity before specification synchronization/archive and preserves the evidence.
 - Block verified status and finish on required failures, missing checks, mandatory skips, stale evidence, or unresolved material findings.
-- Archival alone is not verified delivery.
-- Support these instruction-based gates with actual checks, CI, and independent review where applicable.
+- Archival alone is not verified delivery; qualification of the outcome is separate.
