@@ -20,10 +20,10 @@
 Current locations:
 
 ```text
-source repository: /Users/po/codeandconfigs/dev-command-library
-skill package:     /Users/po/codeandconfigs/dev-command-library/skills/dev
-global links:      /Users/po/.agents/skills/dev   (Codex)
-                   /Users/po/.claude/skills/dev   (Claude Code)
+source repository: <repo-root>
+skill package:     <repo-root>/skills/dev
+global links:      ~/.agents/skills/dev   (Codex)
+                   ~/.claude/skills/dev   (Claude Code)
 ```
 
 Claude Code also needs the Ponytail plugin (`/plugin marketplace add DietrichGebert/ponytail`, then `/plugin install ponytail@ponytail`) and, per project, links from `.claude/skills/` to the project's `.agents/skills/openspec-*` directories.
@@ -35,7 +35,7 @@ Claude Code also needs the Ponytail plugin (`/plugin marketplace add DietrichGeb
 
 ```sh
 (
-  dev_source=/Users/po/codeandconfigs/dev-command-library/skills/dev
+  dev_source="$PWD/skills/dev"  # run from the repository root
   dev_link="$HOME/.agents/skills/dev"
   if ! test -f "$dev_source/SKILL.md"; then
     printf '%s\n' 'Missing skill source.' >&2
@@ -88,7 +88,7 @@ Claude Code also needs the Ponytail plugin (`/plugin marketplace add DietrichGeb
 Example worktree creation, after inspecting the source:
 
 ```sh
-git -C /Users/po/codeandconfigs/dev-command-library worktree add -b dev-library-update /private/tmp/dev-library-update
+git -C "$PWD" worktree add -b dev-library-update "${TMPDIR:-/tmp}/dev-library-update"
 ```
 
 - Validate before promotion; commit only intended files and applicable evidence using explicit paths.
@@ -97,7 +97,7 @@ git -C /Users/po/codeandconfigs/dev-command-library worktree add -b dev-library-
 - For a committed worktree candidate, review the complete diff and promote with a fast-forward only:
 
 ```sh
-git -C /Users/po/codeandconfigs/dev-command-library merge --ff-only dev-library-update
+git -C "$PWD" merge --ff-only dev-library-update
 ```
 
 - Record previous/new commits, verify the global link, and compare installed files with the validated candidate.
@@ -122,7 +122,7 @@ git -C /Users/po/codeandconfigs/dev-command-library merge --ff-only dev-library-
 
 ```sh
 (
-  dev_source=/Users/po/codeandconfigs/dev-command-library/skills/dev
+  dev_source="$PWD/skills/dev"  # run from the repository root
   dev_link="$HOME/.agents/skills/dev"
   if test -L "$dev_link" && test "$(readlink "$dev_link")" = "$dev_source"; then
     unlink "$dev_link"

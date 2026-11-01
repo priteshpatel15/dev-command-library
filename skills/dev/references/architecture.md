@@ -29,10 +29,10 @@
 Current installation:
 
 ```text
-Source: /Users/po/codeandconfigs/dev-command-library
-Links:  /Users/po/.agents/skills/dev   (Codex)
-        /Users/po/.claude/skills/dev   (Claude Code)
-        -> /Users/po/codeandconfigs/dev-command-library/skills/dev
+Source: <repo-root>
+Links:  ~/.agents/skills/dev   (Codex)
+        ~/.claude/skills/dev   (Claude Code)
+        -> <repo-root>/skills/dev
 
 dev-command-library/
 ├── README.md

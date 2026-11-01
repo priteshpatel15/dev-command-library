@@ -6,15 +6,15 @@ Observed 2026-10-09. This report records library installation and planning valid
 
 - Runtime package: 11 files under `skills/dev`.
 - SHA-256 of the JSON-serialized sorted relative-path/content-hash map: `7ae5f763eba24a29c1b693f5dc34b9afcebac948dcd785f51837919d7b1a37f0`. Serialization uses Python `json.dumps(map, sort_keys=True)` with default separators.
-- Source: `/Users/po/codeandconfigs/dev-command-library`.
-- Single global symlink: `/Users/po/.agents/skills/dev` → source `skills/dev`. No second `dev` link was installed under `.codex/skills`.
+- Source: `<repo-root>`.
+- Single global symlink: `~/.agents/skills/dev` → source `skills/dev`. No second `dev` link was installed under `.codex/skills`.
 - Existing skill-creator `quick_validate.py` returned `Skill is valid!` for the staged and installed package. Local Markdown link checks passed. This is structure validation, not a behavioral guarantee.
 
 ## Fresh installed-session observations
 
 Raw evidence base: `/private/tmp/dev-installed-discovery.HXt9bD/`. Each evaluator was a fresh ephemeral Codex CLI process; initial status/final status used a read-only child sandbox, setup used workspace-write. The outer startup had approved local IPC access; no sandbox-bypass flag was used.
 
-1. `status-prompt.txt`, `status-events.jsonl`, `status-last.txt`: the fresh catalog exposed `/Users/po/.agents/skills/dev/SKILL.md`; actual executed read commands loaded that entry. Native root checks used process-local telemetry disable and correctly reported the empty fixture as uninitialized. No explicit candidate path was supplied.
+1. `status-prompt.txt`, `status-events.jsonl`, `status-last.txt`: the fresh catalog exposed `~/.agents/skills/dev/SKILL.md`; actual executed read commands loaded that entry. Native root checks used process-local telemetry disable and correctly reported the empty fixture as uninitialized. No explicit candidate path was supplied.
 2. `setup-prompt.txt`, `setup-events.jsonl`, `setup-last.txt`: globally discovered setup generated the six native OpenSpec workflows, bounded AGENTS/configuration, and healthy native configuration in the unrelated temporary project. Native OpenSpec used fixture-local XDG configuration/data paths. No product code/design/change was requested or generated. Follow-up status observed zero specs/changes.
 3. The first setup handoff suggested status immediately after reporting status. The command reference was clarified to recommend design for an initialized empty project, or plan for an already bounded request. `final-status-prompt.txt`, `final-status-events.jsonl`, `final-status-last.txt` record the fresh installed retest: it reported initialized/no effort and suggested `$dev design "<product goal>"`. No app tests or services were run.
 
@@ -22,7 +22,7 @@ Fresh local OpenSpec integration files were verified by native initialization/co
 
 ## Current-project adoption
 
-Target/path base: `/Users/po/codeandconfigs/restaurant_data_integrator`.
+Target/path base: `<existing-project>`.
 
 - Root `AGENTS.md` now records the required engineering/Ponytail/test/telemetry/UI/copied-DB contract and actual local conventions. OpenSpec config references it while retaining `spec-driven`.
 - `docs/development/operator-experience/roadmap.md` adopts the existing design/spec/verification/catalog and W01–W08 dependencies. It creates no duplicate product design.

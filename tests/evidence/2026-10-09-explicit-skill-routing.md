@@ -6,7 +6,7 @@
 
 ## Observed checks
 
-- PASS — `.venv/bin/python /Users/po/.codex/skills/.system/skill-creator/scripts/quick_validate.py /private/tmp/dev-skill-routing-1wo94pps/dev` from the product repository; exit 0, `Skill is valid!`.
+- PASS — `.venv/bin/python ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py /private/tmp/dev-skill-routing-1wo94pps/dev` from the product repository; exit 0, `Skill is valid!`.
 - PASS — one-off Python inspection resolved all 39 package-local Markdown links and heading anchors.
 - PASS — every routed skill exists and its YAML name matches: six OpenSpec skills and Ponytail core/review. OpenSpec files were read from the product's `.agents/skills`; Ponytail files were read from the installed plugin catalog location.
 - PASS — `OPENSPEC_TELEMETRY=0 openspec --version` returned `1.14.1`; current help and native skill instructions support the mapped operations.

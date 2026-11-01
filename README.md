@@ -1,6 +1,21 @@
 # Development command library
 
-One global skill (Codex and Claude Code) for product design, outcome roadmaps, and delivery through one small OpenSpec change at a time.
+**One global agent skill (`$dev` in Codex, `/dev` in Claude Code) that takes a product from design to outcome roadmap to shipped, verified OpenSpec changes, one small change at a time.**
+
+Agents given a big goal drift: oversized changes, skipped reviews, "done" with no evidence. This skill puts a fixed lifecycle around them (design, plan, work, verify, finish, qualify) with a size budget per change, a change gate before review, and evidence that governs completion.
+
+Author: Pritesh Patel
+
+## Install
+
+Requires [OpenSpec](https://github.com/Fission-AI/OpenSpec) in the target project; Claude Code also needs the Ponytail plugin (see [maintenance](skills/dev/references/maintenance.md#first-installation)).
+
+```sh
+git clone <this-repo> dev-command-library && cd dev-command-library
+mkdir -p ~/.claude/skills ~/.agents/skills
+ln -s "$PWD/skills/dev" ~/.claude/skills/dev   # Claude Code
+ln -s "$PWD/skills/dev" ~/.agents/skills/dev   # Codex
+```
 
 ## Start here
 
@@ -81,13 +96,21 @@ $dev qualify <effort>/<outcome>   # full outcome gate, once, after the last slic
 ## Installation model
 
 ```text
-/Users/po/codeandconfigs/dev-command-library/skills/dev
-                           ↑                ↑
-/Users/po/.agents/skills/dev       /Users/po/.claude/skills/dev
-        (Codex)                         (Claude Code)
+          <repo-root>/skills/dev
+             ↑                ↑
+~/.agents/skills/dev   ~/.claude/skills/dev
+     (Codex)              (Claude Code)
 ```
 
 - The source repository owns the library; one global link per agent exposes it across projects. Claude Code also needs the Ponytail plugin and per-project links to the OpenSpec skills (see [maintenance](skills/dev/references/maintenance.md#first-installation)).
 - Validate candidate updates before editing the linked source; changes become globally visible immediately.
 - Reload changed instructions or start a fresh session after updates.
 - Follow [maintenance](skills/dev/references/maintenance.md) for installation, validation, updates, and recovery.
+
+## Testing
+
+There is no unit-test runtime: the skill is Markdown. Validate its structure with any Agent Skills validator (for example skill-creator's `quick_validate.py skills/dev`), and run the agent-driven behavioral evaluations in [tests/scenarios.md](tests/scenarios.md); results are recorded in [tests/evidence/](tests/evidence/).
+
+## License
+
+MIT - see [LICENSE](LICENSE).

@@ -4,7 +4,7 @@ This document records the design approved before construction, amended on 2026-1
 
 ## Goal and boundaries
 
-Build one global Codex skill named `dev`, authored in `/Users/po/codeandconfigs/dev-command-library/skills/dev` and installed through the single link `/Users/po/.agents/skills/dev`.
+Build one global Codex skill named `dev`, authored in `<repo-root>/skills/dev` and installed through the single link `~/.agents/skills/dev`.
 
 The user enters reusable chat commands to move from product design and an outcome roadmap to bounded OpenSpec changes, implementation, acceptance, and archival. Commands are manual in this version. There is no controller, task database, scheduler, custom OpenSpec schema, or shell execution wrapper.
 
